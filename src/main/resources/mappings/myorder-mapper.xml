@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MyOrderDetailDAO">
+
+    <!-- Search주문 조회 -->
+    <select id="getmyid" resultType="myordervo" parameterType="String">
+        SELECT * FROM ORDERS
+        WHERE ORDER_USER_ID = #{id}
+    </select>
+
+    <select id="getmyOrderList" resultType="myordervo" parameterType="String">
+        SELECT * FROM ORDERS
+        WHERE ORDER_USER_ID = #{id}
+    </select>
+
+    <!-- Search 날짜 가져오기 -->
+    <select id="getMyOrderDateList" resultType="myordervo" parameterType="Map">
+        <!-- myBatis -->
+        SELECT order_no,order_user_id,order_recv_name,order_recv_phone,
+        to_char(order_date, 'YYYY-MM-DD') as order_date,order_total_cost,order_message,order_recv_street_addr,order_recv_remaining_addr,
+        order_recv_zip_code,state,order_accu_point,order_nonmem_email
+        FROM ORDERS
+        <![CDATA[WHERE ORDER_DATE > TO_DATE(#{start_date}, 'YYYY-MM')
+						AND ORDER_DATE <= TO_DATE(#{end_date}, 'YYYY-MM')]]>
+		AND ORDER_USER_ID = #{id}
+    </select>
+
+    <!--Detail  책 주문 가져오기 -->
+    <select id="getOrderBookList" resultType="myorderbookvo" parameterType="Integer">
+        <!-- SELECT O.ORDER_NO,  D.ORDER_B_NO, o.order_user_id, o.order_recv_name, o.order_recv_phone, o.order_date,
+        B.BOOK_NAME, b.book_saleprice, d.order_b_cnt -->
+        SELECT *
+        FROM ORDER_BOOK D, BOOK B
+        WHERE d.book_no = b.book_no
+        AND d.order_no= #{order_no}
+    </select>
+
+    <!-- Detail 굿즈 주문 가져오기 -->
+    <select id="getOrderGoodsList" resultType="myordergoodsvo" parameterType="Integer">
+        <!-- SELECT O.ORDER_NO,  D.ORDER_B_NO, o.order_user_id, o.order_recv_name, o.order_recv_phone, o.order_date,
+        B.BOOK_NAME, b.book_saleprice, d.order_b_cnt -->
+        SELECT *
+        FROM ORDER_GOODS D, GOODS G
+        WHERE g.goods_code = d.goods_code
+        AND d.order_no= #{order_no}
+    </select>
+
+
+    <!-- order_no로 해당 주소 가져오기 -->
+    <select id="getDelivery" resultType="myordervo" parameterType="Integer">
+        SELECT *
+        FROM ORDERS
+        WHERE ORDER_NO = #{order_no}
+    </select>
+
+    <!-- Return 날짜 가져오기 -->
+    <select id="getMyRetrunDateList" resultType="myreturnvo" parameterType="hashmap">
+        SELECT order_no, book_name,order_recv_name,to_char(order_date, 'YYYY-MM-DD') as order_date,
+        category_code,return_exchange_delivery_type,return_exchange_status,
+        to_char(return_exchange_date, 'YYYY-MM-DD') as return_date, cnt
+        FROM MYPAGE_RETURN_EXCHANGE
+        <![CDATA[WHERE ORDER_DATE > TO_DATE(#{start_date}, 'YYYY-MM')
+						AND ORDER_DATE <= TO_DATE(#{end_date}, 'YYYY-MM')]]>
+        AND order_recv_name = #{id}
+    </select>
+    <!-- 환불 조회 -->
+    <select id="myreturnid" resultType="myreturnvo" parameterType="Integer">
+        SELECT *
+        FROM MYPAGE_RETURN_EXCHANGE
+        WHERE ORDER_NO = #{order_no}
+    </select>
+      
+    <select id="getMyMileage" resultType="mymileagevo" parameterType="Integer">
+        <!-- 마일리지 가져오기 -->
+        SELECT *
+        FROM USERS U, USER_CONTENT C, ORDERS O
+        WHERE o.order_no = c.order_no
+        AND u.point= c.point
+        AND u.id= #{id}
+    </select>
+    
+        <!-- 마일리지 날짜 가져오기 -->
+    <select id="getMyMileageDateList" resultType="mymileagevo" parameterType="map">
+ <![CDATA[  SELECT c.idx, o.order_date, c.point_content, o.order_accu_point, c.point_usded, c.point
+        FROM USERS U, USER_CONTENT C, ORDERS O
+        WHERE o.order_no = c.order_no
+        AND u.id= c.user_id
+        AND c.user_id= #{id}]]>
+    </select>
+</mapper>
+

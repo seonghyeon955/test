@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="userDAO">
+
+	<select id="checkId" parameterType="string" resultType="integer">
+		SELECT COUNT(*) FROM USERS WHERE ID = #{id}
+	</select>
+	
+	<select id="login" parameterType="user" resultType="integer">
+		SELECT COUNT(*) FROM USERS WHERE ID = #{id } AND PWD = #{pwd } AND ABSENCE = 0
+	</select>
+	
+	<select id="selectCartIdxCnt" parameterType="String" resultType="integer">
+		SELECT COUNT(*) FROM CART
+		WHERE USER_ID = #{user_id }
+	</select>
+	
+	<select id="getUser" parameterType="string" resultType="user">
+		SELECT ID, NICKNAME, PHONE_NUMBER1, ZIP_CODE, STREET_ADDR, REMAINING_ADDR, EMAIL, POINT, RATE_IDX
+		FROM USERS WHERE ID = #{id }
+	</select>
+	
+	<insert id="signup" parameterType="user">
+		INSERT INTO USERS 
+			(ID, PWD, USER_NAME, NICKNAME, PHONE_NUMBER1, SMS_RECEIVE, PHONE_NUMBER2, 
+			BIRTHDAY_YEAR, BIRTHDAY_MONTH, BIRTHDAY_DAY, ZIP_CODE, STREET_ADDR, REMAINING_ADDR, 
+			EMAIL, EMAIL_RECEIVE, POINT, RATE_IDX, PURCHASE_CNT, PURCHASE_6MONTH, SIGNUP_DATE, ABSENCE)
+			VALUES 
+			(#{id }, #{pwd }, #{user_name }, #{nickname }, #{phone_number1 }, #{sms_receive }, #{phone_number2 },
+			#{birthday_year }, #{birthday_month }, #{birthday_day }, #{zip_code }, #{street_addr }, #{remaining_addr },
+			#{email }, #{email_receive }, 0, 1, 0, 0, SYSDATE, 0)
+	</insert>
+	
+	<update id="loginUpdate" parameterType="string">
+	<![CDATA[
+		UPDATE USERS SET
+    		PURCHASE_6MONTH = (SELECT NVL(SUM(ORDER_TOTAL_COST), 0) FROM ORDERS
+                            		WHERE ORDER_DATE BETWEEN 
+                            							TO_DATE(TO_CHAR(SYSDATE - (INTERVAL '6' MONTH), 'YY/MM')|| '/01', 'YY/MM/DD') 
+                                                		AND TO_DATE(TO_CHAR(SYSDATE, 'YY/MM')|| '/01', 'YY/MM/DD')
+                            		AND ORDER_USER_ID = #{id }),
+    		RATE_IDX = (SELECT MAX(RATE_IDX) FROM USER_RATE 
+                    		WHERE purchase_6month <= (SELECT NVL(SUM(ORDER_TOTAL_COST), 0) FROM ORDERS
+                                                    		WHERE ORDER_DATE BETWEEN 
+                                                    							TO_DATE(TO_CHAR(SYSDATE - (INTERVAL '6' MONTH), 'YY/MM')|| '/01', 'YY/MM/DD') 
+                                                                            	AND TO_DATE(TO_CHAR(SYSDATE, 'YY/MM')|| '/01', 'YY/MM/DD')
+                                                    		AND ORDER_USER_ID = #{id }))
+    		WHERE ID = #{id }
+    ]]>
+	</update>
+	
+	<select id="findID" parameterType="user" resultType="string">
+		SELECT ID FROM USERS 
+		WHERE USER_NAME= #{user_name }
+			AND EMAIL= #{email }
+	</select>
+	
+	<select id="findPwd" parameterType="user" resultType="integer">
+		SELECT COUNT(*) FROM USERS
+		WHERE ID = #{id } AND USER_NAME = #{user_name } 
+			AND EMAIL = #{email }
+	</select>
+	
+	<update id="updatePwd" parameterType="user">
+		UPDATE USERS SET PWD = #{pwd } 
+			WHERE ID = #{id }
+	</update>
+	
+	<select id="getUserInfo" parameterType="string" resultType="user">
+		SELECT USER_NAME, NICKNAME, PHONE_NUMBER1, SMS_RECEIVE, PHONE_NUMBER2, 
+			ZIP_CODE, STREET_ADDR, REMAINING_ADDR, EMAIL, EMAIL_RECEIVE
+		FROM USERS WHERE ID = #{id }
+	</select>
+	
+	<update id="userUpdate" parameterType="user">
+		UPDATE USERS SET 
+			NICKNAME = #{nickname }, PHONE_NUMBER1 = #{phone_number1 }, SMS_RECEIVE = #{sms_receive },
+			PHONE_NUMBER2 = #{phone_number2 }, ZIP_CODE = #{zip_code }, STREET_ADDR = #{street_addr },
+			REMAINING_ADDR = #{remaining_addr }, EMAIL = #{email }, EMAIL_RECEIVE = #{email_receive }
+		WHERE ID = #{id }
+	</update>
+	
+	<update id="userLeave" parameterType="string">
+		UPDATE USERS SET
+		ABSENCE = 1
+		WHERE ID = #{id }
+	</update>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

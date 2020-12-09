@@ -1,0 +1,268 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<% String admin = (String)session.getAttribute("admin");  %>
+<script>
+	function pwdcheck_popup(str) {
+		window.open("${pageContext.request.contextPath}/Jungha/pwdcheck.jsp?type=" + str, "비밀번호 확인", "width=350, height=250, left=100, top=50");
+	}
+</script>
+
+<!-- Sidebar -->
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+  <!-- Sidebar - Brand -->
+  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="officeAdmin.do">
+    <!-- <div class="sidebar-brand-icon rotate-n-15">
+      <i class="fas fa-laugh-wink"></i>
+    </div> -->
+    <div class="sidebar-brand-text mx-3">
+    <%=admin%>
+    </div>
+  </a>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider my-0">
+
+  <!-- Nav Item - Dashboard -->
+  <li class="nav-item active">
+    <a class="nav-link" href="officeAdmin.do">
+      <i class="fas fa-fw fa-tachometer-alt"></i>
+      <span>ADMIN HOME</span></a>
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider">
+
+  <!-- Heading -->
+  <div class="sidebar-heading">
+    Products
+  </div>
+
+  <!-- Nav Item - Pages Collapse Menu -->
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+      <i class="fas fa-fw fa-cog"></i>
+      <span>상품관리</span>
+    </a>
+    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <h6 class="collapse-header">상품관리:</h6>
+        <a class="collapse-item" href="officeNewBook.do">상품입고</a>
+        <a class="collapse-item" href="officeProduct.do">전체상품조회</a>
+        <a class="collapse-item" href="officeStock.do">재고관리</a>
+        <!-- <a class="collapse-item" href="buttons.html">Buttons</a>
+        <a class="collapse-item" href="cards.html">Cards</a> -->
+      </div>
+    </div>
+  </li>
+
+  <!-- Nav Item - Utilities Collapse Menu -->
+ <!--  <li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+      <i class="fas fa-fw fa-wrench"></i>
+      <span>상품조회</span>
+    </a>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <h6 class="collapse-header">상품조회:</h6>
+        <a class="collapse-item" href="../officeProduct.do">전체상품조회</a>
+        <a class="collapse-item" href="../officeStock.do">재고관리</a>
+      </div>
+    </div>
+  </li> -->
+
+  <!-- Divider -->
+  <hr class="sidebar-divider">
+
+  <!-- Heading -->
+  <div class="sidebar-heading">
+    Orders
+  </div>
+
+  <!-- Nav Item - Pages Collapse Menu -->
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOrders" aria-expanded="true" aria-controls="collapseOrders">
+      <i class="fas fa-fw fa-cog"></i>
+      <span>주문관리</span>
+    </a>
+    <div id="collapseOrders" class="collapse" aria-labelledby="headingOrders" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <h6 class="collapse-header">주문관리:</h6>
+        <a class="collapse-item" href="officeOrder.do">주문내역조회</a>
+        <!-- <a class="collapse-item" href="buttons.html">Buttons</a>
+        <a class="collapse-item" href="cards.html">Cards</a> -->
+      </div>
+    </div>
+  </li>
+
+
+  <!-- Divider -->
+  <hr class="sidebar-divider">
+
+  <!-- Heading -->
+  <div class="sidebar-heading">
+    Sales
+  </div>
+
+  <!-- Nav Item - Pages Collapse Menu -->
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSales" aria-expanded="true" aria-controls="collapseSales">
+      <!-- <i class="fas fa-fw fa-folder"></i> -->
+      <i class="fas fa-fw fa-cog"></i>
+      <span>매출조회</span>
+    </a>
+    <div id="collapseSales" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <h6 class="collapse-header">매출조회</h6>
+        <a class="collapse-item" href="officeMonthSales.do">월별매출조회</a>
+        <a class="collapse-item" href="officeDaySales.do">일별매출조회</a>
+        <a class="collapse-item" href="officeCategorySales.do">도서별매출조회</a>
+        <a class="collapse-item" href="StoreCompare.do">매출비교</a>
+        <div class="collapse-divider"></div>
+      </div>
+    </div>
+  </li>
+
+
+  <!-- Divider -->
+  <hr class="sidebar-divider d-none d-md-block">
+
+<!-- Heading -->
+  <div class="sidebar-heading">
+   OFFICE
+  </div>
+
+  <!-- Nav Item - Pages Collapse Menu -->
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages1" aria-expanded="true" aria-controls="collapsePages1">
+      <i class="fas fa-fw fa-cog"></i>
+      <span>지점정보</span>
+    </a>
+    <div id="collapsePages1" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <h6 class="collapse-header"><%=admin %></h6>
+        <a class="collapse-item" href="javascript:pwdcheck_popup('store_update')">정보수정</a>
+        <a class="collapse-item" href="javascript:pwdcheck_popup('store_delete')">지점탈퇴</a>
+
+        <div class="collapse-divider"></div>
+     <!--    <h6 class="collapse-header">Other Pages:</h6>
+        <a class="collapse-item" href="404.html">404 Page</a>
+        <a class="collapse-item" href="blank.html">Blank Page</a> -->
+      </div>
+    </div>
+  </li>
+
+
+</ul>
+<!-- End of Sidebar -->
+
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+
+  <!-- Main Content -->
+<div id="content">
+
+  <!-- Topbar -->
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+  <!-- Sidebar Toggle (Topbar) -->
+  <form class="form-inline">
+    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+      <i class="fa fa-bars"></i>
+    </button>
+  </form>
+
+  <!-- Topbar Search -->
+  <!-- <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+    <div class="input-group">
+      <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+      <div class="input-group-append">
+        <button class="btn btn-primary" type="button">
+          <i class="fas fa-search fa-sm"></i>
+        </button>
+      </div>
+    </div>
+  </form> -->
+  
+	<form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+    <div class="input-group">
+      <!-- <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+      <div class="input-group-append">
+        <button class="btn btn-primary" type="button">
+          <i class="fas fa-search fa-sm"></i>
+        </button>
+      </div> -->
+      <h3 id="menu_name"></h3>
+    </div>
+    </form>
+    
+  <!-- Topbar Navbar -->
+  <ul class="navbar-nav ml-auto">
+
+    <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+    <li class="nav-item dropdown no-arrow d-sm-none">
+      <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-search fa-fw"></i>
+      </a>
+      <!-- Dropdown - Messages -->
+      <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
+        <form class="form-inline mr-auto w-100 navbar-search">
+          <div class="input-group">
+            <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+              <button class="btn btn-primary" type="button">
+                <i class="fas fa-search fa-sm"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </li>
+
+    
+
+    <div class="topbar-divider d-none d-sm-block"></div>
+
+    <!-- Nav Item - User Information -->
+    <li class="nav-item dropdown no-arrow">
+      <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="mr-2 d-none d-lg-inline text-gray-600 small"><%=admin %>지점 관리자님</span>
+        <img class="img-profile rounded-circle" src="${pageContext.request.contextPath}/resources/img/pic/profile.jpg">
+      </a>
+      <!-- Dropdown - User Information -->
+      <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+        <a class="dropdown-item" href="#">
+          <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+          지점정보보기
+        </a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+          <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+          Logout
+        </a>
+      </div>
+    </li>
+
+  </ul>
+
+</nav>
+<!-- End of Topbar -->
+
+  <!-- Logout Modal-->
+  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"></h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">로그아웃 하시겠습니까?</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+          <a class="btn btn-primary" href="logout.do">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>

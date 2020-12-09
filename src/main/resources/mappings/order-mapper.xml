@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Order">
+	<select id="getGoodsList" resultType="goodsvo" parameterType="String">
+		SELECT * FROM GOODS
+			<![CDATA[WHERE GOODS_START_DATE <= #{nowDate}
+			AND GOODS_END_DATE >= #{nowDate}]]>
+	</select>
+	
+	<select id="getOrderBookSalePrice" resultType="Integer" parameterType="Map">
+		SELECT SUM(BOOK_PRICE) FROM BOOK WHERE BOOK_NO IN
+		<foreach collection="orderbookArray" item="book_no"
+			open="(" separator=", " close=")">
+			#{book_no}
+		</foreach>
+	</select>
+	
+	<select id="getOrderBookVOList" resultType="bookvo" parameterType="Map">
+		SELECT * FROM BOOK
+		WHERE 
+		<foreach collection="orderbook_no" item="book_no"
+			separator=" OR ">
+			BOOK_NO = #{book_no}
+		</foreach>
+		
+	</select>
+	
+	<select id="getOrderCartList" parameterType="map" resultType="cartbookvo">
+		SELECT C.CART_IDX, C.USER_ID, C.CNT, C.STORE_CODE,
+		B.BOOK_NAME, B.BOOK_IMG, B.BOOK_NO, B.BOOK_SALEPRICE,
+		BC.CATEGORY_CODE, BC.CATEGORY_MAIN, BC.CATEGORY_MIDDLE, BC.CATEGORY_NAME
+		FROM CART C, BOOK B, BOOK_CATEGORY BC
+		WHERE B.BOOK_NO = C.BOOK_NO AND
+		BC.CATEGORY_NO = B.CATEGORY_NO AND
+		(
+		<foreach collection="ordercart_no" item="cart_no"
+			separator=" OR ">
+			CART_IDX = #{cart_no}
+		</foreach>
+		)
+	</select>
+	
+	<select id="getOrderGoodsVOList" parameterType="map" resultType="goodsvo">
+		SELECT * FROM GOODS
+		WHERE 
+		<foreach collection="goods_codes" item="goods_code"
+			separator=" OR ">
+			GOODS_CODE = #{goods_code}
+		</foreach>
+	</select>
+	
+	<update id="updateBasic_addr" parameterType="map">
+		UPDATE USERS
+		SET ZIP_CODE = #{zip_code},
+		STREET_ADDR = #{street_addr},
+		REMAINING_ADDR = #{remaining_addr}
+		WHERE ID = #{id}
+	</update>
+	
+	<insert id="insertOrder" parameterType="ordersvo">
+		INSERT INTO ORDERS (ORDER_USER_ID, ORDER_RECV_NAME, ORDER_RECV_PHONE,
+			ORDER_DATE, ORDER_TOTAL_COST, ORDER_MESSAGE, 
+			ORDER_RECV_STREET_ADDR, ORDER_RECV_REMAINING_ADDR, ORDER_RECV_ZIP_CODE,
+			STATE, ORDER_ACCU_POINT)
+		VALUES(#{order_user_id}, #{order_recv_name}, #{order_recv_phone},
+			SYSDATE, #{order_total_cost}, #{order_message}, 
+			#{order_recv_street_addr}, #{order_recv_remaining_addr}, #{order_recv_zip_code},
+			'결제완료', #{order_accu_point})
+	</insert>
+	
+	<insert id="insertOrderNotOnline" parameterType="ordersvo">
+		INSERT INTO ORDERS (ORDER_USER_ID, ORDER_RECV_NAME, ORDER_RECV_PHONE,
+			ORDER_DATE, ORDER_TOTAL_COST, 
+			STATE, ORDER_ACCU_POINT)
+		VALUES(#{order_user_id}, #{order_recv_name}, #{order_recv_phone},
+			SYSDATE, #{order_total_cost},
+			'결제완료', #{order_accu_point})
+	</insert>
+	
+	<select id="selectOrdersById" parameterType="String" resultType="Integer">
+		SELECT MAX(ORDER_NO)
+		FROM ORDERS
+		WHERE ORDER_USER_ID = #{id}
+	</select>
+	
+	<select id="selectCartVOList" parameterType="map" resultType="cartvo">
+		SELECT *
+		FROM CART
+		WHERE 
+		<foreach collection="cart_idxs" item="cart_idx" separator=" OR ">
+			CART_IDX = #{cart_idx}
+		</foreach>
+	</select>
+	
+	<insert id="insertOrder_book" parameterType="map">
+		<foreach collection="cartList" item="cart" separator=" " open="INSERT ALL" close="SELECT * FROM DUAL">
+		INTO ORDER_BOOK (
+			ORDER_NO, ORDER_OFFICE_NO,
+			BOOK_NO, ORDER_B_CNT,
+			ORDER_DELIVERY_TYPE, STATE)
+		VALUES 
+		
+			(#{order_no}, #{order_office_no}, #{cart.book_no}, #{cart.cnt},
+			#{order_delivery_type}, #{state})
+		</foreach>
+	</insert>
+	
+	<insert id="insertOrder_book2" parameterType="map">
+		<foreach collection="orderbook_no" item="book_no" separator=" " open="INSERT ALL" close="SELECT * FROM DUAL">
+		INTO ORDER_BOOK (
+			ORDER_NO, ORDER_OFFICE_NO,
+			BOOK_NO, ORDER_B_CNT,
+			ORDER_DELIVERY_TYPE, STATE)
+		VALUES 
+		
+			(#{order_no}, #{order_office_no}, #{book_no}, #{orderbook_cnt},
+			#{order_delivery_type}, #{state})
+		</foreach>
+	</insert>
+	
+	<insert id="insertOrder_goods">
+		<foreach collection="ordergoods_no" item="goods_code" separator=" " open="INSERT ALL" close="SELECT * FROM DUAL">
+		INTO ORDER_GOODS (GOODS_CODE, ORDER_NO, ORDER_G_CNT)
+		VALUES (#{goods_code}, #{order_no}, 1)
+		</foreach>
+	</insert>
+	
+	<delete id="deleteCart">
+		DELETE FROM CART 
+		WHERE 
+		<foreach collection="cart_idxs" item="cart_idx" separator=" OR ">
+			CART_IDX = #{cart_idx}
+		</foreach>
+	</delete>
+	
+	<select id="selectStore" parameterType="String" resultType="storevo">
+		SELECT STORE_CODE, ZIP_CODE, STREET_ADDR, REMAINING_ADDR,
+			EMAIL, STORE_PHONE_NUMBER, STORE_NAME
+		FROM STORE
+		WHERE STORE_CODE = #{store_code}
+	</select>
+	
+	
+	<select id="selectCBook" parameterType="Integer" resultType="cartbookvo">
+		SELECT B.BOOK_NO, B.BOOK_NAME, B.BOOK_WRITER, B.BOOK_PUBLISHER, B.BOOK_PRICE, B.BOOK_SALEPRICE,
+			B.BOOK_PUBLISHED_DATE, B.BOOK_TOTAL_PAGE, BOOK_ENTERED_DATE, B.BOOK_IMG,
+			CB.CATEGORY_CODE, CB.CATEGORY_MAIN, CB.CATEGORY_MIDDLE, CB.CATEGORY_NAME
+		FROM BOOK B, BOOK_CATEGORY CB
+		WHERE B.CATEGORY_NO = CB.CATEGORY_NO
+		AND B.BOOK_NO = #{book_no}
+	</select>
+	
+	
+	<update id="updateBookStock1" parameterType="map">
+		UPDATE BOOK_STOCK 
+		SET CNT = CNT - #{orderbook_cnt}
+		WHERE
+		<foreach collection="orderbook_no" item="book_no" separator=" OR ">
+		 (BOOK_NO = #{book_no} AND STORE_CODE = #{order_office_no})
+		</foreach>
+	</update>
+	
+	
+	<update id="updateBookStock2" parameterType="map">
+		<foreach collection="cartList" item="list" separator=" ; " open="BEGIN" close=";END;">
+			UPDATE BOOK_STOCK
+			SET CNT = CNT - #{list.cnt}
+			WHERE BOOK_NO = #{list.book_no} AND STORE_CODE = #{order_office_no}
+		</foreach>
+	</update>
+	
+	<update id="updateMyOrderData" parameterType="String">
+      UPDATE USERS
+      SET PURCHASE_6MONTH = (SELECT SUM(ORDER_TOTAL_COST)
+      FROM ORDERS
+      WHERE ORDER_USER_ID = #{order_user_id}
+      AND ORDER_DATE > ADD_MONTHS(SYSDATE, -6)),
+      PURCHASE_CNT = PURCHASE_CNT + 1
+      WHERE ID = #{order_user_id}
+   </update>
+	
+	
+	
+	
+</mapper>

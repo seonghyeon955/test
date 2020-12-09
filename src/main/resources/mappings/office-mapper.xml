@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="officeDAO">
+  
+	<select id="getOfficeSales" resultType="int">
+		SELECT SUM(C.TOTPRICE)
+		  FROM ORDERS O, ORDER_DETAIL D, (SELECT (B.BOOK_SALEPRICE * D.ORDER_B_CNT) AS TOTPRICE, D.ORDER_NO AS O_NO
+		                                      FROM ORDERS O, ORDER_DETAIL D, BOOK B
+		                                     WHERE O.ORDER_NO = D.ORDER_NO
+		                                       AND D.ORDER_B_NO = B.BOOK_NO
+		                                       AND D.ORDER_OFFICE_NO = 'store2'
+		                                       AND O.ORDER_DATE = '2020/09/09') C
+		 WHERE O.ORDER_NO = D.ORDER_NO
+		   AND D.ORDER_NO = C.O_NO
+		 GROUP BY D.ORDER_OFFICE_NO, O.ORDER_DATE;
+	</select>
+	
+	<!-- 도서 삽입 -->
+	<insert id="newBook" parameterType="officeVO">
+		INSERT INTO BOOK (CATEGORY_NO, BOOK_NAME, BOOK_WRITER, BOOK_PUBLISHER, 
+				BOOK_PRICE, BOOK_SALEPRICE ,BOOK_INFO, BOOK_PUBLISHED_DATE, 
+				BOOK_TOTAL_PAGE, BOOK_ENTERED_DATE, EBOOK, BOOK_ISBN, BOOK_IMG)
+          VALUES (#{category_no}, #{book_name}, #{book_writer}, #{book_publisher},
+          		  #{book_price}, #{book_saleprice}, #{book_info,jdbcType=VARCHAR}, #{book_published_date,jdbcType=DATE},
+          		  #{book_total_page,jdbcType=INTEGER}, #{book_entered_date,jdbcType=DATE}, #{ebook,jdbcType=INTEGER}, #{book_isbn,jdbcType=INTEGER}, #{book_img})
+	</insert>
+	
+	<!-- 재고 조정 -->
+	<update id="modifyStock" parameterType="officeVO">
+		UPDATE BOOK_STOCK
+		   SET CNT = #{cnt}
+		 WHERE STORE_CODE = #{store_code}
+		   AND BOOK_NO = #{book_no}
+	</update>
+	
+	<!-- 주문 리스트 가져오기 -->
+	<select id="getOrderList" parameterType="String" resultType="officeVO">
+		<!-- SELECT O.ORDER_NO,  D.ORDER_B_NO, o.order_user_id, o.order_recv_name, o.order_recv_phone, o.order_date,
+        B.BOOK_NAME, b.book_saleprice, d.order_b_cnt -->
+        SELECT *
+	  		FROM ORDERS O, ORDER_BOOK D, BOOK B
+			WHERE o.order_no = d.order_no
+			AND d.book_no = b.book_no
+			AND d.order_office_no = #{store_code}
+	</select>
+	
+	<!-- 주문당 detail 갯수 -->
+	<select id="orderDetailCnt" parameterType="String" resultType="int">
+		SELECT COUNT(O.ORDER_NO) ORDERCNT, O.ORDER_NO
+		  FROM ORDERS O, ORDER_BOOK D, BOOK B
+		 WHERE o.order_no = d.order_no
+		   AND d.book_no = b.book_no
+		   AND d.order_office_no = #{store_code}
+		 GROUP BY O.ORDER_NO
+	</select>
+	
+	<!-- 책 보유 리스트 조회 -->
+	<select id="officeBookList" parameterType="String" resultType="officeVO">
+		SELECT b.book_no, b.category_no, b.book_name, b.book_writer, b.book_publisher,
+		       b.book_price, b.book_saleprice, NVL(b.book_info, '데이터없음') AS book_info, NVL(b.book_published_date, '9999/12/31') AS book_published_date, NVL(b.book_total_page, 0) as book_total_page,
+		       NVL(b.book_entered_date, '9999/12/31') as book_entered_date, NVL(b.ebook, 0) as ebook, NVL(b.book_isbn, 0) as book_isbn, b.book_img, bs.cnt
+		  FROM BOOK B, STORE S, BOOK_STOCK BS
+		 WHERE b.book_no = bs.book_no
+		   AND s.store_code = bs.store_code
+		   AND s.store_code = 'store2'
+	</select>
+	
+	
+	<!-- 오늘 판매 금액 (현재는 2020-09-09) -->
+	<select id="todaySalesValue" parameterType="map" resultType="int">
+		SELECT SUM(B.BOOK_SALEPRICE * D.ORDER_B_CNT) sumSales
+		  FROM ORDERS O, ORDER_BOOK D, BOOK B
+		 WHERE O.ORDER_NO = D.ORDER_NO
+		   AND D.BOOK_NO = B.BOOK_NO
+		   AND d.order_office_no = #{office_no}		<!-- #{office_no} -->
+		   AND O.ORDER_DATE = #{today}		<!-- #{today} -->
+		 GROUP BY d.order_office_no
+	</select>
+	
+	<!-- 해당 월 판매 금액 (현재는 9월) -->
+	<select id="monthSalesValue" parameterType="map" resultType="int">
+		SELECT SUM(B.BOOK_SALEPRICE * D.ORDER_B_CNT) sumSales
+		  FROM ORDERS O, ORDER_BOOK D, BOOK B
+		 WHERE O.ORDER_NO = D.ORDER_NO
+		   AND D.BOOK_NO = B.BOOK_NO
+		   AND d.order_office_no = #{office_no}
+		   AND O.ORDER_DATE BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD')
+		                        AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
+		 GROUP BY d.order_office_no
+	</select>
+	
+	<!-- 한달동안의 매출 표시 -->
+	<select id="monthTOTCost" parameterType="String" resultType="officeVO">
+		SELECT o.order_date, sum(o.order_total_cost) AS TOTCOST
+		  FROM ORDERS O, ORDER_BOOK D, BOOK B
+		 WHERE O.ORDER_NO = D.ORDER_NO
+		   AND D.BOOK_NO = B.BOOK_NO
+		   AND d.order_office_no = 'store2'
+		   AND O.ORDER_DATE BETWEEN add_months(SYSDATE,-1) AND SYSDATE
+		 GROUP BY O.ORDER_DATE
+	</select>
+	
+	<!-- 책 정보 가져오기 -->
+	<select id="getBookInfo" parameterType="int" resultType="officeVO">
+		SELECT *
+		  FROM BOOK B, BOOK_CATEGORY C
+		 WHERE BOOK_NO = #{book_no}
+		   AND B.CATEGORY_NO = c.category_no
+	</select>
+	
+	<!-- 카테고리 대분류 가져오기 -->
+	<select id="getCategoryCode" resultType="String">
+		SELECT CATEGORY_CODE
+		  FROM BOOK_CATEGORY
+		 GROUP BY CATEGORY_CODE
+	</select>
+	
+	
+	<!-- 카테고리 중분류 가져오기 -->
+	<select id="getCategoryMain" parameterType="String" resultType="String">
+		SELECT CATEGORY_MAIN
+		  FROM BOOK_CATEGORY
+		 WHERE CATEGORY_CODE = #{category_code}
+		 GROUP BY CATEGORY_MAIN
+	</select>
+	
+	<!-- 카테고리 이름 가져오기 -->
+	<select id="getCategoryName" parameterType="map" resultType="String">
+		SELECT CATEGORY_NAME
+		  FROM BOOK_CATEGORY
+		 WHERE CATEGORY_CODE = #{category_code}
+		   AND CATEGORY_MAIN = #{category_main}
+		 GROUP BY CATEGORY_NAME
+	</select>
+	
+	<!-- 책 이름 검색 -->
+	<select id="searchBookName" parameterType="map" resultType="String">
+		SELECT B.BOOK_NAME
+		  FROM BOOK B, BOOK_CATEGORY C
+		 WHERE B.BOOK_NAME LIKE '%' || #{book_name} || '%'
+		   AND C.CATEGORY_NAME = #{category_name}
+		 ORDER BY BOOK_NO ASC
+	</select>
+	
+	<!-- 카테고리넘버 가져오기 -->
+	<select id="getCategoryNo" parameterType="officeVO" resultType="int">
+		SELECT CATEGORY_NO
+		  FROM BOOK_CATEGORY
+		 WHERE CATEGORY_CODE = #{category_code}
+		   AND CATEGORY_MAIN = #{category_main}
+		   AND CATEGORY_NAME = #{category_name}
+	</select>
+	
+	<!-- 책 정보 수정 -->
+	<update id="modifyUpdate" parameterType="officeVO">
+		UPDATE BOOK SET BOOK_NAME = #{book_name}
+            , CATEGORY_NO = #{category_no}
+            , BOOK_WRITER =#{book_writer}
+            , BOOK_PUBLISHER = #{book_publisher}
+            , BOOK_PRICE = #{book_price}
+            , BOOK_SALEPRICE = #{book_saleprice}
+            , BOOK_INFO = #{book_info}
+            , BOOK_PUBLISHED_DATE = #{book_published_date}
+            , BOOK_TOTAL_PAGE = #{book_total_page}
+            , BOOK_ENTERED_DATE = #{book_entered_date}
+            , EBOOK = #{ebook}
+            , BOOK_ISBN = #{book_isbn}
+            , BOOK_IMG = #{book_img}
+		WHERE BOOK_NO = #{book_no}
+	</update>
+	
+	
+	<!-- 월별매출 가져오기 -->
+	<select id="monthSales" parameterType="Map" resultType="officeVO">
+	SELECT TO_CHAR(b.dt, 'YYYY-MM') as mm
+		    , NVL(SUM(a.SUMVALUE), 0) monTOT
+		  FROM (SELECT TO_CHAR(O.ORDER_DATE, 'YYYY-MM-DD') AS ORDER_DATE, SUM(B.BOOK_SALEPRICE* D.ORDER_B_CNT) as sumValue
+		          FROM ORDERS O, BOOK B, ORDER_BOOK D
+		         WHERE O.ORDER_NO = D.ORDER_NO
+		           AND D.BOOK_NO = B.BOOK_NO
+		           <if test='store_code != "all"'>
+		           AND D.ORDER_OFFICE_NO = #{store_code}
+		           </if>
+		           AND ORDER_DATE BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD')
+		                            AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
+		         GROUP BY ORDER_DATE) a
+		        ,(SELECT TO_DATE(#{startDate},'YYYY-MM-DD') + LEVEL - 1 AS dt
+		            FROM DUAL
+		          <![CDATA[CONNECT BY LEVEL <= (TO_DATE(#{endDate}, 'YYYY-MM-DD')]]>
+		                            -TO_DATE(#{startDate}, 'YYYY-MM-DD') +1)
+		         ) b
+		 WHERE b.dt = a.ORDER_DATE(+)
+		 GROUP BY TO_CHAR(b.dt, 'YYYY-MM')
+		 ORDER BY TO_CHAR(b.dt, 'YYYY-MM')
+	</select>
+	
+	<!-- 해당 월의 시작 날짜 구하기 -->
+	<select id="startDate" parameterType="String" resultType="String">
+		SELECT TO_CHAR(ADD_MONTHS(LAST_DAY(#{date})+1,-1),'YYYY-MM-DD') as startDate
+		  FROM DUAL
+  	</select> 
+  	
+	<!-- 해당 월의 마지막 날짜 구하기 -->
+	<select id="endDate" parameterType="String" resultType="String">
+		select TO_CHAR(last_Day(#{date}), 'YYYY-MM-DD') as lastDate
+  		  FROM DUAL
+  	</select>
+  
+	<!-- 일별매출 가져오기 -->
+	<select id="daySales" parameterType="Map" resultType="officeVO">
+		SELECT TO_CHAR(b.dt, 'YYYY-MM-DD') AS dd
+	        , NVL(SUM(a.SUMVALUE), 0) dayTOT
+		  FROM (SELECT TO_CHAR(O.ORDER_DATE, 'YYYY-MM-DD') AS ORDER_DATE, SUM(B.BOOK_SALEPRICE* D.ORDER_B_CNT) as sumValue 
+		          FROM ORDERS O, BOOK B, ORDER_BOOK D
+		         WHERE O.ORDER_NO = D.ORDER_NO
+		           AND D.BOOK_NO = B.BOOK_NO
+		           <if test='store_code != "all"'>
+		           AND D.ORDER_OFFICE_NO = #{store_code}
+		           </if>
+		           AND ORDER_DATE BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD')
+		                              AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
+		        GROUP BY ORDER_DATE) a
+		        ,(SELECT TO_DATE(#{startDate},'YYYY-MM-DD') + LEVEL - 1 AS dt
+		            FROM DUAL
+		          <![CDATA[ CONNECT BY LEVEL <= (TO_DATE(#{endDate}, 'YYYY-MM-DD')]]>
+		                            - TO_DATE(#{startDate}, 'YYYY-MM-DD') + 1)
+		         ) b
+		 WHERE b.dt = a.ORDER_DATE(+)
+		 GROUP BY b.dt
+		 ORDER BY b.dt
+	</select>
+	
+	<!-- 카테고리별 매출 가져오기 -->
+	<select id="categorySales" parameterType="officeVO" resultType="officeVO">
+		SELECT c.category_name as category_name, SUM(B.BOOK_SALEPRICE * D.ORDER_B_CNT) sumSales
+		  FROM ORDERS O, ORDER_BOOK D, BOOK B, BOOK_CATEGORY C
+		 WHERE O.ORDER_NO = D.ORDER_NO
+		   AND D.BOOK_NO = B.BOOK_NO
+		   AND B.CATEGORY_NO = C.CATEGORY_NO
+		   <if test='store_code != "all"'>
+		   AND d.order_office_no = #{store_code}
+		   </if>
+		   AND O.ORDER_DATE BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD')
+		                        AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
+		 GROUP BY c.category_name
+		 <if test='store_code != "all"'>
+		   , d.order_office_no
+		 </if>
+		 
+	</select>
+	
+	<!-- 지점별 매출 가져오기 -->
+	<select id="StoreSales" resultType="officeVO">
+		SELECT D.ORDER_OFFICE_NO AS STORE_CODE, SUM(B.BOOK_SALEPRICE * D.ORDER_B_CNT) sumSales
+		  FROM ORDERS O, ORDER_BOOK D, BOOK B, STORE S
+		 WHERE O.ORDER_NO = D.ORDER_NO
+		   AND D.BOOK_NO = B.BOOK_NO
+		   AND S.STORE_CODE = D.ORDER_OFFICE_NO
+		   AND O.ORDER_DATE BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD')
+		                        AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
+		 GROUP BY S.STORE_CODE
+		 
+		 
+	</select>
+	
+	<!-- 카테고리넘버로 카테고리이름 가져오기 -->
+	<select id="category_name" parameterType="String" resultType="String">
+		SELECT CATEGORY_NAME
+		  FROM BOOK_CATEGORY
+		 WHERE CATEGORY_NO = #{category_no}
+	</select>
+	
+	<!-- 책 입고를 위한 넣은 책 book_no 받아오기 -->
+	<select id="getBookNo" resultType="Integer" parameterType="officeVO">
+		SELECT BOOK_NO
+		FROM BOOK
+		WHERE BOOK_NAME = #{book_name}
+		AND BOOK_WRITER = #{book_writer}
+		AND BOOK_PUBLISHER = #{book_publisher}
+		AND BOOK_TOTAL_PAGE = #{book_total_page}
+		AND BOOK_INFO = #{book_info}
+	</select>
+	
+	
+</mapper>

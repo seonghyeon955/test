@@ -1,0 +1,219 @@
+@charset "UTF-8";
+	.margin_top50 {margin-top : 50px! important;}
+	.margin_top25 {margin-top : 25px! important;}
+	.margin_top5 {margin-top : 5px! important;}
+
+	.center {
+		text-align: center;
+	}
+	
+	.middle {
+		vertical-align: middle;
+	}
+	
+	.left_table {
+		width: 100%;
+	}
+	
+	.left_table .th {
+		width: 120px;
+		
+	}
+	
+	.line {
+		color: gray;
+	}
+	
+	.tab {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+	}
+	
+	.tab li {
+		float: left;
+	}
+	
+	.tab li a {
+		display: inline-block;
+		text-align: center;
+		padding: 14px 16px;
+		color: black;
+		font-size: 1.2em;
+		transition: 0.3s;
+		text-decoration: none;
+		background-color: #FCFCFC;
+	}
+	.tab .current a {
+		color: white;
+		background-color: #D38888;
+	}
+	.tab li a:hover {
+		background-color: #EAEAEA;
+		color: black;
+		
+	}
+	
+	.tabcontent {
+		display: none;
+		padding: 6px 12px;
+		
+	}
+	
+	.current_delivery {
+		display: block;
+		color: black;
+	}
+	
+	#inputname {
+		width: 180px;
+	}
+	
+	#inputphone1 {
+		width: 50px;
+	}
+	
+	.inputphone2 {
+		width: 50px;
+	}
+	
+	#inputzip {
+		width: 80px;
+	}
+	
+	.addr_td {
+		line-height: 40px;
+	}
+	
+	input[type="text"] {
+		height: 30px;
+	}
+	
+	#find_addr{
+		height: 30px;
+		font-size: 0.8em;
+	}
+	
+	.inputaddr {
+		width: 300px;
+	}
+	
+	.btn_toggle_img {
+		width: 30px;
+	}
+	
+	
+	.book-th {
+		/* border-top: 2px solid black;
+		 */vertical-align: 
+	}
+	
+	.book-th-first {
+		width: 50%;
+	}
+	
+	.book-img {
+		width: 60px;
+		height: 100px;
+	}
+	
+	
+	.text-align-right {
+		text-align: right;
+	}
+	
+	.border-top-bottom {
+	/* 	border-top: 1px solid gray;
+		border-bottom: 1px solid gray;
+		border-collapse: collapse;
+	 */}
+	
+	
+	input[name=usepointForPay] {
+		text-align: right;
+		width: 60px;
+		height: 30px;
+	}
+	
+	input[name=usepointForPay]::-webkit-outer-spint-button,
+	input[name=usepointForPay]::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+	
+	.left_table_th {
+		width: 60%;
+	}
+	
+	/* input[name=orderFinish] {
+		background-color: #D38888;
+		color: white;
+	}
+	
+	input[name=gotoCart] {
+		background-color: grey;
+		color: black;
+	} */
+	
+	.pay_cart_btn {
+		width: 60%;
+	}
+	
+	.btn-outline-secondary {
+		width: 100%;
+		color: white;
+		border-color: white;
+	}
+	
+	.orderfinishbutton {
+		background-color: #D38888;
+	}
+	
+	.orderfinishbutton:hover {
+		background-color: #9F5252;
+	}
+	
+	.gocartbutton {
+		background-color: grey;
+	}
+	
+	.gocartbutton:hover {
+		background-color: #9F5252;
+	}
+	
+	.payType {
+		border: 2px solid white;
+		border-collapse: collapse;
+		
+	}
+	.payImg img {
+		width: 100%;
+		max-width: 150px;
+	}
+	
+	.pay-table{
+	/* 	border: 1px solid gray;
+	 */}
+	
+	.current_pay {
+		border: 3px solid black;
+	}
+	
+	.payAtag {
+		font-size: 100%;
+	}
+	
+	.right_content {
+		max-width: 400px;
+		margin: auto;
+		height: 300px;
+	}
+	
+	.orderList {
+		font-size: 1.2em;
+		background-color: #D38888;
+		height:60px;
+		display: table-cell;
+		width: 180px;
+	}

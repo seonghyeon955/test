@@ -1,0 +1,61 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!-- </body>태그 바로 위에 작성 -->
+<br><br>
+<footer class="footer">
+<div id="grayLine">
+	<ul>
+		<li><a href="#">판매가</a></li>
+		<li><a href="#">이용약관</a></li>
+		<li><a href="#">개인정보처리방침</a></li>
+		<li><a href="#">청소년보호정책</a></li>
+		<li><a href="#">고객센터</a></li>
+		<li><a href="#">협력사여러분</a></li>
+		<li><a href="#">제휴/제안</a></li>
+	
+	</ul>
+</div>
+
+<div id="secondLine">
+	<table>
+		<tr>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+		</tr>
+		<tr>
+		<td><img src="${pageContext.request.contextPath}/resources/img/pic/logo.png" width="150px"></td>
+		</tr>
+		<tr>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+		</tr>
+		<tr>
+			<td>(주)지니문고 서울시 종로구 종로1 대표이사:요술램프</td>
+			<td>LG U+ 구매안전서비스 서비스 가입 확인</td>
+		</tr>
+		<tr>
+			<td>사업자 등록번호 : 294-02-11180</td>
+			<td>고객님은 안전거래를 위해 현금 등으로 결제 시 저희 쇼핑몰에서 가입한 LG유플러스의 구매안전서비스를
+			 이용하실 수 있습니다.</td>
+		</tr>
+		<tr>
+			<td>대표전화 : 1544-8282(발신자 부담전화) 팩스:3822-087-5711(지역번호 공통)
+		</tr>
+		<tr>
+			<td>서울특별시 통신판매업신고번호: 제 875호 사업자정보확인</td>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+		</tr>
+		<tr>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+		</tr>
+		<tr>
+			<td>COPYRIGHT(C) BIT BOOK CENTR ALL RIGHTS RESERVED.</td>
+		</tr>
+		<tr>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+		</tr>
+		<tr>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+		</tr>
+	</table>
+
+</div>
+</footer>

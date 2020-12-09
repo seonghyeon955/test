@@ -1,0 +1,81 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<c:set var="contextPath" value="${pageContext.request.contextPath}" />
+
+<style>
+body {
+  margin: 0;
+  font-family: "Lato", sans-serif;
+}
+.sidebar {
+  margin: 0;
+  padding: 0;
+  width: 300px;
+  background-color: #f1f1f1;
+  position: fixed;
+  height: 700px;
+  overflow: auto;
+}
+.sidebar a {
+  display: block;
+  color: black;
+  padding: 16px;
+  font-size:20px; 
+  text-decoration: none;
+            text-align: center;
+}
+.sidebar a.active {
+  background-color: #9F5252;
+  color: white;
+   font-size:20px; 
+}
+.sidebar a:hover:not(.active) {
+  background-color: #555;
+  color: white;
+     font-size:20px; 
+}
+div.content {
+  margin-left: 200px;
+  padding: 1px 16px;
+   height: 1000px;
+}
+@media screen and (max-width: 700px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  .sidebar a {float: left;}
+  div.content {margin-left: 0;}
+}
+@media screen and (max-width: 400px) {
+  .sidebar a {
+    text-align: center;
+    float: none;
+  }
+}
+</style>
+<script>
+   function pwdcheck_popup(str){
+      window.open("${pageContext.request.contextPath}/Jungha/pwdcheck.jsp?type="+str, "비밀번호 확인", "width=350, height=250, left=100, top=50");
+   }
+</script>
+<body>
+
+
+   <div class="sidebar">
+   <a class="active">마이페이지</a>
+     <a ></a>
+  <a href="getMyOrderdate.do">주문/배송조회</a>
+  <a href="getMyRetrunDateList.do">취소/교환/반품조회</a>
+  <a href="${pageContext.request.contextPath}/kyungnan/myMileage.jsp">마일리지</a>
+  <a href="${pageContext.request.contextPath}/kyungnan/qnaList.jsp">문의하기</a>
+   <a href="javascript:pwdcheck_popup('mem_update')">회원정보수정</a>
+  <a href="javascript:pwdcheck_popup('mem_delete')">회원탈퇴</a>
+   <a href="${pageContext.request.contextPath}/kyungnan/barodream.jsp">나의 바로드림 수령점</a>
+ <a ></a>
+</div>
+
+</body>

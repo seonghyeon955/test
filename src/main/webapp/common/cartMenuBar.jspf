@@ -1,0 +1,133 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<style>
+
+	#bannerF1 {
+		font-size:3em;
+		color:white;
+		padding-left: 94px;
+	}
+	#bannerF2 {
+		color:white;
+		padding-left: 10px;
+		
+	}
+	#jangbaguni {
+		font-size:3em;
+		padding-left: 95px;
+		color:white;
+	}
+	#jumunhasil {
+		color:white;
+		padding-top: 40px;
+	}
+	#second_right {
+		color: gray;
+		
+	}
+	#nav-menu ul li {
+		margin: 0px 10px;
+	}
+	#second_right ul li {
+		float:right;
+		padding-left:0px;
+	}
+	#nav-menu ul li:first-child {
+		color:white;
+	}
+	
+	.navbar-nav {
+		height: 80px;
+	}
+	
+	#grayBanner {
+		color:black;
+		background-color: #BABABA;
+		height:50px;
+	}
+	#grayBanner li {
+		list-style-type:none;
+		display:inline;
+		border-right: 0.3px solid gray;
+		padding: 0px 15px 0px 15px;
+		
+	}
+	
+	#grayBanner ul li:last-child{
+		border-right: none;
+	}
+	#grayBanner ul {
+		padding-left:100px;
+		padding-bottom: 20px;
+		padding-top: 10px;
+	}
+	.space-img {
+	   vertical-align: middle;
+	   width: 0;
+	   height: 0;
+	   border-left: 40px solid #9F5252;
+	   border-top: 40px solid transparent;
+	   border-bottom: 40px solid transparent;
+	}
+	
+	.nav-menu {
+		float:right;
+	}
+	
+	.nav-menu .order-img {
+	   vertical-align: middle;
+	   width: 80px;
+	   height: 80px;
+   
+}
+	
+	
+	
+</style>
+	<!-- <nav class="navbar navbar-expand-md" id="secondBanner"> -->
+			<!-- <ul class="navbar-nav">
+
+				<li id="jangbaguni">장바구니&nbsp;&nbsp;</li>
+				<li id="jumunhasil">주문하실 상품을 선택해주세요</li>
+			</ul> -->
+			 <div class="container-fluid" style="background-color: #9F5252">
+        
+               <div class="row">
+                   <div class="col-sm-4 order_bar" id="bannerFont" style="left-padding: 90px;">
+                        <span id="bannerF1">장바구니</span>
+                        <span id="bannerF2">주문하실 상품을 선택해주세요</span>
+                   </div>
+                   <div class="col-sm-8 order_bar">
+                      <div class="align-left">
+                        
+                        <img class="order-img" alt="장바구니이미지" src="${pageContext.request.contextPath}/resources/img/pic/cartImage.png">
+                        &nbsp; &nbsp;
+                    <!--     <span class="space-img"></span> -->
+                         <!-- <span class="bg-light"> -->
+                        <img class="order-img" alt="사은품이미지" src="${pageContext.request.contextPath}/resources/img/pic/goodsBlackImage.png">
+                         &nbsp; &nbsp;
+                        <!-- <span class="space-img"> --><!-- </span> -->
+                        <img class="order-img" alt="결제이미지" src="${pageContext.request.contextPath}/resources/img/pic/BuyBlackImage.png">
+                         &nbsp; &nbsp;
+                        <!--    <span class="space-img"></span> -->
+                           <img class="order-img" alt="피니쉬이미지" src="${pageContext.request.contextPath}/resources/img/pic/finishBlackImage.png">
+                        <!-- </span> -->
+                     
+                     </div>
+                  </div>
+               </div>
+            </div>
+			
+	
+	<nav>
+		<div id="grayBanner">
+			<ul>
+				<li>${sessionScope.user.nickname }님의(골드) 통장현황</li>
+				<li>쿠폰 : 0장</li>
+				<li>통합포인트 : ${sessionScope.user.point}P</li>
+			</ul>
+		</div>
+	
+	</nav>
+	<br>
+		

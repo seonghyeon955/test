@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="storemapper">
+
+<insert id="insertStore" parameterType="store">
+	INSERT INTO STORE ( STORE_CODE, STORE_PWD, ZIP_CODE, STREET_ADDR, REMAINING_ADDR,
+					    EMAIL, STORE_PHONE_NUMBER, STORE_NAME)
+	VALUES (#{store_code}, #{store_pwd}, #{zip_code}, #{street_addr}, #{remaining_addr},
+			#{email}, #{store_phone_number}, #{store_name})
+</insert>
+
+<update id="updateStore" parameterType="store">
+	UPDATE STORE
+	SET STORE_CODE = #{store_code}, STORE_PWD= #{store_pwd}, ZIP_CODE =#{zip_code}, STREET_ADDR=#{street_addr}, 
+		REMAINING_ADDR = #{remaining_addr}, EMAIL=#{email}, STORE_PHONE_NUMBER=#{store_phone_number}, 
+		STORE_NAME = #{store_name}
+</update>
+
+<delete id="deleteStore" parameterType="store">
+	DELETE FROM STORE WHERE STORE_CODE = #{store_code}
+</delete>
+
+<select id="selectStore" parameterType="String" resultType="store">
+	SELECT * FROM STORE WHERE STORE_CODE = #{store_code}
+</select>
+
+<select id="selectStores" resultType="store">
+	SELECT * FROM STORE
+</select>
+
+</mapper>

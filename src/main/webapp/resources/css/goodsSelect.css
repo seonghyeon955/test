@@ -1,0 +1,53 @@
+@charset "UTF-8";
+.end-span {
+	display: inline-block;
+	height: 80px;
+}
+
+td .order-img {
+	width: 4em;
+	height: 4em;
+}
+table {
+	width: 90%;
+	margin: auto;
+}
+
+.btn{
+	background-color: white;
+}
+.btn-go-cart {
+	border-color: #5F0E1F;
+	color: #5F0E1F;
+}
+.btn-go-cart:hover {
+	background-color: #9F5252;
+	color: white;
+}
+
+.btn-go-buy {
+	border-color: #9F5252;
+	color: #9F5252;
+}
+.btn-go-buy:hover {
+	background-color: #5F0E1F;
+	color: white;
+}
+
+.td-width {
+	width: 16%;
+}
+.th-point {
+	width: 30%;
+}
+.td-point {
+	width: 20%;
+}
+.center {
+	text-align: center;
+}
+.right {
+	text-align: right;
+}
+
+

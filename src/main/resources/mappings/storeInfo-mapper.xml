@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="storeInfoDAO">
+
+	<select id="login" parameterType="storevo" resultType="integer">
+		SELECT COUNT(*) FROM STORE
+		WHERE STORE_CODE = #{store_code } AND STORE_PWD = #{store_pwd } AND STORE_APPROVAL = '영업중'
+	</select>
+	
+	<insert id="signin" parameterType="storevo">
+		INSERT INTO STORE
+			(STORE_CODE, STORE_PWD, ZIP_CODE, STREET_ADDR, REMAINING_ADDR, EMAIL, 
+			STORE_PHONE_NUMBER, STORE_NAME, STORE_APPROVAL)
+		VALUES
+			('store' || STORE_CODE_SEQ.NEXTVAL, #{store_pwd }, #{zip_code }, #{street_addr }, #{remaining_addr }, #{email },
+			#{store_phone_number }, #{store_name }, '승인전')
+	</insert>
+	
+	<select id="getStore" parameterType="string" resultType="storevo">
+		SELECT ZIP_CODE, STREET_ADDR, REMAINING_ADDR, EMAIL, STORE_PHONE_NUMBER, STORE_NAME
+		FROM STORE WHERE STORE_CODE = #{store_code }
+	</select>
+	
+	<update id="storeUpdate" parameterType="storevo">
+		UPDATE STORE SET 
+			ZIP_CODE = #{zip_code }, STREET_ADDR = #{street_addr }, REMAINING_ADDR = #{remaining_addr },
+			EMAIL = #{email }, STORE_PHONE_NUMBER = #{store_phone_number }
+		WHERE STORE_CODE = #{store_code }
+	</update>
+	
+	<update id="updatePwd" parameterType="storevo">
+		UPDATE STORE SET
+			STORE_PWD = #{store_pwd }
+		WHERE STORE_CODE = #{store_code }
+	</update>
+	
+	<update id="storeLeave" parameterType="string">
+		UPDATE STORE SET
+		STORE_APPROVAL = '폐점'
+		WHERE STORE_CODE = #{store_code }
+	</update>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

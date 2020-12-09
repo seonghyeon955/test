@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OnlineStore">
+
+	<!-- 월/일별 온라인/모든지점 책 판매 내역 -->
+	<select id="BookSales" parameterType="map" resultType="Integer">
+		SELECT NVL(SUM(B.BOOK_SALEPRICE * OB.ORDER_B_CNT), 0)
+		FROM ORDERS O, ORDER_BOOK OB, BOOK B
+		WHERE O.ORDER_NO = OB.ORDER_NO
+		AND B.BOOK_NO = OB.BOOK_NO
+		<if test="store_code != null">
+			AND OB.ORDER_OFFICE_NO = #{store_code}
+		</if>
+		AND O.ORDER_DATE BETWEEN TO_DATE(#{firstDay}, 'YYYY/MM/DD')
+							AND TO_DATE(#{lastDay}, 'YYYY/MM/DD')
+	</select>
+
+	<!-- 월/일별 온라인/모든지점 굿즈 판매 내역 -->
+	<select id="GoodsSales" parameterType="map" resultType="Integer">
+		SELECT NVL(SUM(G.GOODS_PRICE * OG.ORDER_G_CNT), 0)
+		FROM ORDERS O, ORDER_GOODS OG, GOODS G, ORDER_BOOK OB
+		WHERE O.ORDER_NO = OG.ORDER_NO
+		AND G.GOODS_CODE = OG.GOODS_CODE
+		AND O.ORDER_NO = OB.ORDER_NO
+		<if test="store_code != null">
+			AND OB.ORDER_OFFICE_NO = #{store_code}
+		</if>
+		AND O.ORDER_DATE BETWEEN TO_DATE(#{firstDay}, 'YYYY/MM/DD')
+							AND TO_DATE(#{lastDay}, 'YYYY/MM/DD')
+	</select>
+	
+	<!-- category_no 추출 -->
+	<select id="getCategory_no" resultType="Integer" parameterType="map">
+		SELECT NVL(CATEGORY_NO, 0)
+		FROM BOOK_CATEGORY
+		WHERE CATEGORY_CODE = #{category_code}
+		AND CATEGORY_MAIN = #{category_main}
+		AND CATEGORY_NAME = #{category_name}
+	</select>
+	
+	<!-- 동일한 책이 있는지 확인 -->
+	<select id="checkBook" resultType="Integer" parameterType="com.bit.bookstore.vo.BookVODateToString">
+		SELECT COUNT(*)
+		FROM BOOK
+		WHERE BOOK_NAME = #{book_name}
+		AND BOOK_WRITER = #{book_writer}
+		AND BOOK_PUBLISHER = #{book_publisher}
+		AND BOOK_TOTAL_PAGE = #{book_total_page}
+		AND BOOK_INFO = #{book_info}
+	</select>
+	
+	<!-- 책 입고 -->
+	<insert id="insertBook" parameterType="com.bit.bookstore.vo.BookVODateToString">
+		INSERT INTO BOOK(CATEGORY_NO, BOOK_NAME, BOOK_WRITER, BOOK_PUBLISHER,
+				BOOK_PRICE, BOOK_SALEPRICE, BOOK_INFO, BOOK_PUBLISHED_DATE,
+				BOOK_TOTAL_PAGE, BOOK_ENTERED_DATE, EBOOK, BOOK_ISBN, BOOK_IMG)
+		VALUES(#{category_no}, #{book_name}, #{book_writer}, #{book_publisher},
+			   #{book_price}, #{book_saleprice}, #{book_info}, TO_DATE(#{book_published_date}, 'YYYY-MM-DD'),
+			   #{book_total_page}, TO_DATE(#{book_entered_date}, 'YYYY-MM-DD'), #{ebook}, #{book_isbn}, #{book_img})
+	</insert>
+	
+	<!-- 책 입고를 위한 넣은 책 book_no 받아오기 -->
+	<select id="getBookNo" resultType="Integer" parameterType="com.bit.bookstore.vo.BookVODateToString">
+		SELECT BOOK_NO
+		FROM BOOK
+		WHERE BOOK_NAME = #{book_name}
+		AND BOOK_WRITER = #{book_writer}
+		AND BOOK_PUBLISHER = #{book_publisher}
+		AND BOOK_TOTAL_PAGE = #{book_total_page}
+		AND BOOK_INFO = #{book_info}
+	</select>
+	
+	
+	<!-- 책 입고를 위해 스토어리스트 뽑기 -->
+	<select id="getStore_codeList" resultType="String">
+		SELECT STORE_CODE
+		FROM STORE
+	</select>
+	
+	<!-- 책 입고 후 모든 지점 재고 0으로 데이터 넣기 -->
+	<insert id="insertBookInStore" parameterType="map">
+		<foreach collection="store_codeList" item="store_code" separator=" " open="INSERT ALL" close="SELECT * FROM DUAL">
+		INTO BOOK_STOCK (STORE_CODE, BOOK_NO, CNT)
+		VALUES
+			(#{store_code}, #{book_no}, 0)
+		</foreach>
+	</insert>
+	
+	<!-- 동일한 굿즈 있는지 확인 -->
+	<select id="checkGoods" resultType="Integer" parameterType="String">
+		SELECT COUNT(*)
+		FROM GOODS
+		WHERE GOODS_NAME = #{goods_name}
+	</select>
+	
+	<!-- 굿즈 입고 -->
+	<insert id="insertGoods" parameterType="com.bit.bookstore.vo.GoodsVODateToString">
+		INSERT INTO GOODS(GOODS_NAME, GOODS_PRICE, GOODS_START_DATE, GOODS_END_DATE, GOODS_IMAGE)
+		VALUES(#{goods_name}, #{goods_price}, TO_DATE(#{goods_start_date}, 'YYYY-MM-DD'), TO_DATE(#{goods_end_date}, 'YYYY-MM-DD'), #{goods_image})
+	</insert>
+	
+	
+	<select id="getOnlineTotalCount" parameterType="map" resultType="Integer">
+		SELECT COUNT(*)
+		FROM BOOK_STOCK BS, BOOK B
+		WHERE B.BOOK_NO = BS.BOOK_NO
+		AND STORE_CODE = #{store_code}
+		<if test='search != null and search != ""'>
+		AND B.BOOK_NAME LIKE '%' || #{search} || '%'
+		</if>
+	</select>
+	
+	<!-- 페이지에 표시할 책 재고 리스트 조회(online) -->
+	<select id="getBookStockList" parameterType="map" resultType="com.bit.bookstore.vo.BookStockVO">
+		SELECT *
+		FROM (SELECT ROWNUM R_NUM, A.*
+			FROM (SELECT B.BOOK_NO, B.CATEGORY_NO, B.BOOK_NAME, B.BOOK_WRITER, B.BOOK_PUBLISHER,
+                    B.BOOK_PRICE, B.BOOK_SALEPRICE, BOOK_IMG,
+                    BS.STOCK_IDX, BS.STORE_CODE, BS.CNT
+				FROM BOOK B, BOOK_STOCK BS
+				WHERE B.BOOK_NO = BS.BOOK_NO
+				AND BS.STORE_CODE = 'online'
+				<if test="search != null and !search.equals('')">
+				AND B.BOOK_NAME LIKE '%' || #{search} || '%'
+				</if>
+				ORDER BY BS.CNT) A)
+		WHERE R_NUM BETWEEN #{begin} and #{end}
+	</select>
+	
+	<!-- 재고 변경 -->
+	<update id="updateStockCnt" parameterType="map">
+		UPDATE BOOK_STOCK
+		SET CNT = #{cnt}
+		WHERE STOCK_IDX = #{stock_idx}
+	</update>
+	
+	<!-- 책 상세 정보 -->
+	<select id="getBookDetail" parameterType="Integer" resultType="com.bit.bookstore.vo.BookNCategoryVO">
+		SELECT B.BOOK_NO, B.CATEGORY_NO, B.BOOK_NAME, B.BOOK_WRITER, B.BOOK_PUBLISHER,
+			B.BOOK_PRICE, B.BOOK_SALEPRICE, B.BOOK_INFO, TO_CHAR(B.BOOK_PUBLISHED_DATE, 'YYYY"년 "MM"월 "DD"일"') AS BOOK_PUBLISHED_DATE,
+			B.BOOK_TOTAL_PAGE, TO_CHAR(B.BOOK_ENTERED_DATE, 'YYYY"년 "MM"월 "DD"일"') AS BOOK_ENTERED_DATE,
+			B.EBOOK, B.BOOK_ISBN, B.BOOK_IMG,
+			BC.CATEGORY_CODE, BC.cATEGORY_MAIN, BC.CATEGORY_NAME
+		FROM BOOK B, BOOK_CATEGORY BC
+		WHERE B.CATEGORY_NO = BC.CATEGORY_NO
+		AND B.BOOK_NO = #{book_no}
+	</select>
+	
+	<!-- 책 정보 수정 -->
+	<update id="updateBook" parameterType="com.bit.bookstore.vo.BookVODateToString">
+		UPDATE BOOK SET BOOK_NAME = #{book_name}
+            , CATEGORY_NO = #{category_no}
+            , BOOK_WRITER =#{book_writer}
+            , BOOK_PUBLISHER = #{book_publisher}
+            , BOOK_PRICE = #{book_price}
+            , BOOK_SALEPRICE = #{book_saleprice}
+            , BOOK_INFO = #{book_info}
+            , BOOK_PUBLISHED_DATE = #{book_published_date}
+            , BOOK_TOTAL_PAGE = #{book_total_page}
+            , BOOK_ENTERED_DATE = #{book_entered_date}
+            , EBOOK = #{ebook}
+            , BOOK_ISBN = #{book_isbn}
+            , BOOK_IMG = #{book_img}
+		WHERE BOOK_NO = #{book_no}
+	</update>
+	
+	<!-- qna 총 게시글 수 검색 -->
+	<select id="getQNAListTotalCount" parameterType="map" resultType="Integer">
+		SELECT COUNT(*)
+		FROM QNA
+		WHERE 1 = 1
+		<!-- 응답여부로 검색할 때 -->
+		<if test="qna_answer != 2">
+			AND QNA_ANSWER = #{qna_answer}
+		</if>
+		<!-- 검색어를 입력 했으면 -->
+		<if test="search != null and search != ''">
+			<!-- 제목검색 -->
+			<if test="search_where == 1">
+				AND QNA_TITLE LIKE '%' ||  #{search} || '%'
+			</if>
+			<!-- 문의작성자 검색 -->
+			<if test="search_where == 2">
+				AND QNA_MEM_ID LIKE '%' || #{search} || '%'
+			</if>
+			<!-- 문의 내용 검색 -->
+			<if test="search_where == 3">
+				AND QNA_CONTENT LIKE '%' || #{search} || '%'
+			</if>
+		</if>
+	</select>
+	
+	<!-- 페이지에 표시할 qna 게시글 리스트 조회 -->
+	<select id="getQNAList" parameterType="map" resultType="com.bit.bookstore.vo.QNAVO">
+		SELECT *
+		FROM (SELECT ROWNUM R_NUM, Q.*
+				FROM (SELECT *
+						FROM QNA
+						WHERE 1 = 1
+						<!-- 응답여부로 검색할 때 -->
+						<if test="qna_answer != 2">
+							AND QNA_ANSWER = #{qna_answer}
+						</if>
+						<!-- 검색어를 입력 했으면 -->
+						<if test="search != null and search != ''">
+							<!-- 제목검색 -->
+							<if test="search_where == 1">
+								AND QNA_TITLE LIKE '%' || #{search} || '%'
+							</if>
+							<!-- 문의작성자 검색 -->
+							<if test="search_where == 2">
+								AND QNA_MEM_ID LIKE '%' || #{search} || '%'
+							</if>
+							<!-- 문의 내용 검색 -->
+							<if test="search_where == 3">
+								AND QNA_CONTENT LIKE '%' || #{search} || '%'
+							</if>
+						</if>
+						ORDER BY QNA_DATE DESC) Q)
+		WHERE R_NUM BETWEEN #{begin} and #{end}
+	</select>
+	
+	
+	
+	<select id="getQNAVO" parameterType="Integer" resultType="com.bit.bookstore.vo.QNAVO">
+		SELECT *
+		FROM QNA
+		WHERE QNA_NO = #{qna_no}
+	</select>
+	
+	<!-- 해당 QNA에 작성된  답글-->
+	<select id="getQNA_commentList" parameterType="Integer" resultType="com.bit.bookstore.vo.QNA_commentVO">
+		SELECT *
+		FROM QNA_COMMENT
+		WHERE QNA_NO = #{qna_no}
+	</select>
+	
+	<!-- QNA 답변 작성 -->
+	<insert id="insertQNA_comment" parameterType="com.bit.bookstore.vo.QNA_commentVO">
+		INSERT INTO QNA_COMMENT(QNA_NO, QNA_CO_DATE, QNA_CO_CONTENT, QNA_CO_STORE_CODE)
+			VALUES(#{qna_no}, SYSDATE, #{qna_co_content}, 'online')
+	</insert>
+	
+	<!-- QNA 답변 완료 후 QNA테이블에 anq_answer응답완료로 전환 -->
+	<update id="updateQNA_Answer" parameterType="Integer">
+		UPDATE QNA
+			SET QNA_ANSWER = 1
+			WHERE QNA_NO = #{qna_no}
+	</update>
+	
+	
+	<!-- 카테고리 리스트 뽑기 -->
+	<select id="getCategoryList">
+		SELECT *
+		FROM BOOK_CATEGORY
+		ORDER BY CATEGORY_CODE;
+	</select>
+	
+	<!-- 스토어 리스트로 뽑기 -->
+	<select id="getStorevoList" parameterType="String" resultType="storevo">
+		SELECT STORE_CODE, ZIP_CODE, STREET_ADDR, REMAINING_ADDR, EMAIL, STORE_PHONE_NUMBER, STORE_NAME, STORE_APPROVAL
+		FROM STORE
+			WHERE STORE_APPROVAL = #{store_approval}
+	</select>
+	
+	<!-- storevo 뽑기 -->
+	<select id="getStorevo" parameterType="String" resultType="storevo">
+		SELECT STORE_CODE, ZIP_CODE, STREET_ADDR, REMAINING_ADDR, EMAIL, STORE_PHONE_NUMBER, STORE_NAME, STORE_APPROVAL
+		FROM STORE
+		WHERE STORE_CODE = #{store_code}
+	</select>
+	
+	<!-- 추가지점승인하기 & 지점 폐점하기 -->
+	<update id="updateStore_approval" parameterType="Map">
+		UPDATE STORE
+		SET STORE_APPROVAL = #{store_approval}
+		WHERE STORE_CODE = #{store_code}
+	</update>
+	
+	<select id="getStoreList" parameterType="map" resultType="storevo">
+		SELECT *
+		FROM (SELECT ROWNUM R_NUM, S.*
+				FROM (SELECT *
+						FROM STORE
+						WHERE 1 = 1
+						<!-- all이면 영업중, 폐점 검색 -->
+						<if test="store_approval != 'all'">
+							AND STORE_APPROVAL = #{store_approval}
+						</if>
+						<if test="store_approval == 'all'">
+							AND STORE_APPROVAL = '영업중'
+							OR STORE_APPROVAL = '폐점'
+						</if>
+						<!-- 검색어를 입력했으면 -->
+						<if test="search != null and search != ''">
+							<!-- 지점코드검색 -->
+							<if test='search_where == "지점코드"'>
+								AND STORE_CODE LIKE '%' || #{search} || '%'
+							</if>
+							<!-- 지점이름검색 -->
+							<if test='search_where == "지점이름"'>
+								AND STORE_NAME LIKE '%' || #{search} || '%'
+							</if>
+							<!-- 지점메일검색 -->
+							<if test='search_where == "지점메일"'>
+								AND EMAIL LIKE '%' || #{search} || '%'
+							</if>
+							<!-- 지점주소검색 -->
+							<if test='search_where == "지점주소"'>
+								AND STREET_ADDR LIKE '%' || #{search} || '%'
+								OR REMAINING_ADDR LIKE '%' || #{search} || '%'
+							</if>
+							<!-- 지점전화번호검색 -->
+							<if test='search_where == "지점전화번호"'>
+								AND STORE_PHONE_NUMBER LIKE '%' || #{search} || '%'
+							</if>
+						</if>
+						ORDER BY STORE_CODE DESC) S)
+		WHERE R_NUM BETWEEN #{begin} and #{end}
+	</select>
+	
+	
+	<!-- 지점 count 뽑기 -->
+	<select id="getStoreListTotalCount" parameterType="map" resultType="Integer">
+		SELECT COUNT(*)
+		FROM STORE
+		WHERE 1 = 1
+		<!-- all이면 영업중, 폐점 검색 -->
+		<if test="store_approval != 'all'">
+			AND STORE_APPROVAL = #{store_approval}
+		</if>
+		<if test="store_approval == 'all'">
+			AND STORE_APPROVAL = '영업중'
+			OR STORE_APPROVAL = '폐점'
+		</if>
+		<!-- 검색어를 입력했으면 -->
+		<if test="search != null and search != ''">
+			<!-- 지점코드검색 -->
+			<if test='search_where == "지점코드"'>
+				AND STORE_CODE LIKE '%' || #{search} || '%'
+			</if>
+			<!-- 지점이름검색 -->
+			<if test='search_where == "지점이름"'>
+				AND STORE_NAME LIKE '%' || #{search} || '%'
+			</if>
+			<!-- 지점메일검색 -->
+			<if test='search_where == "지점메일"'>
+				AND EMAIL LIKE '%' || #{search} || '%'
+			</if>
+			<!-- 지점주소검색 -->
+			<if test='search_where == "지점주소"'>
+				AND STREET_ADDR LIKE '%' || #{search} || '%'
+				OR REMAINING_ADDR LIKE '%' || #{search} || '%'
+			</if>
+			<!-- 지점전화번호검색 -->
+			<if test='search_where == "지점전화번호"'>
+				AND STORE_PHONE_NUMBER LIKE '%' || #{search} || '%'
+			</if>
+		</if>
+	</select>
+	
+	
+	<!-- 메인페이지 한달 매출 시작 날짜 뽑기 -->
+	<select id="getStartDate" parameterType="String" resultType="String">
+		SELECT TO_CHAR(ADD_MONTHS(TO_DATE(#{date}, 'YY-MM-DD') + 1 ,-1),'YYYY-MM-DD') AS STARTDATE
+			FROM DUAL
+	</select>
+	
+	
+</mapper>

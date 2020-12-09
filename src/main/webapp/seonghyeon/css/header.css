@@ -1,0 +1,23 @@
+@charset "UTF-8";
+
+
+	#secondBanner {
+		background-color: #9F5252;
+
+	}
+	a {
+	  color: black;	  
+	  text-decoration:none;
+	}
+	
+	.centered {
+        left: 50%; 
+        margin-left: 420px;
+      }
+      
+   .form-control {
+   		width:500px;
+   }
+   .bottomLine {
+   		border-bottom: 1px solid lightGray;
+   }

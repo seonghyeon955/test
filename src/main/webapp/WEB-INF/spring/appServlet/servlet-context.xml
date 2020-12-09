@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:component-scan base-package="com.bit.bookstore" />
+	<context:component-scan base-package="com.spring.biz.user" />
+	<context:component-scan base-package="com.spring.biz.view" />
+	<context:component-scan base-package="com.spring.biz.office" />
+	<context:component-scan base-package="com.spring.biz" />
+	<context:component-scan base-package="com.spring.jung" />
+	<context:component-scan base-package="com.spring.biz.seongmi" />
+	<context:component-scan base-package="com.spring.biz.seongmi.view" />
+	<context:component-scan base-package="com.bookstore.order" />
+	<context:component-scan base-package="com.bookstore.userrate" />
+	<context:component-scan base-package="com.bookstore.mileage" />
+	
+	
+	
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<!-- Json 데이터 전환 관련 설정 -->
+	<!-- JSON 변환관련 HttpMessageConverter(인터페이스) 를 구현한 객체
+		MappingJackson2HttpMessageConverter 객체 사용-->
+	<mvc:annotation-driven></mvc:annotation-driven>
+
+	
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<!-- <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/" />
+		<property name="suffix" value=".jsp" />
+	</bean> -->
+	
+	
+	
+	<!-- 파일업로드 관련 설정(MultipartResolver 등록) -->
+	<!-- 명칭 multipartResolver 이름은 대소문자 구분해서 동일하게 작성 
+		Resolver 명칭이 있는 객체명은 대체로 정해져 있음 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="10000000"></property>
+	</bean>
+	
+	<!-- resources 매핑만 되고 나머지는 안 됩니다. -->
+	<mvc:resources mapping="/resources/**" location="/resources/"></mvc:resources>
+	<mvc:resources mapping="/images/**" location="/resources/images/"></mvc:resources>
+	<mvc:resources mapping="/pic/**" location="/resources/images/pic/"></mvc:resources>
+	
+	<!-- img절대 경로 -->
+	<!-- <mvc:resources mapping="/img/**" location="/img/"/> -->
+	
+</beans>

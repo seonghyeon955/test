@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jegomapper">
+
+<select id="getJego" parameterType="int" resultType="jego">
+	SELECT *
+	FROM BOOK_STOCK B, STORE S
+	WHERE BOOK_NO= #{book_no}
+	AND B.STORE_CODE = S.STORE_CODE
+</select>
+
+<select id="getPickupjego" parameterType="integer" resultType="jego">
+	SELECT * 
+	FROM STORE S, BOOK_STOCK B
+    WHERE S.STORE_CODE = B.STORE_CODE
+    AND B.BOOK_NO = #{book_no }
+    AND S.STORE_CODE != 'online'
+</select>
+
+
+
+</mapper>

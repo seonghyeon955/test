@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bookmapper">
+
+<insert id="insertBook" parameterType="book">
+	INSERT INTO BOOK (BOOK_NO, CATEGORY_NO, BOOK_NAME, BOOK_WRITER, 
+					BOOK_PUBLISHER, BOOK_PRICE, BOOK_SALEPRICE, BOOK_IMG)
+	VALUES (#{book_no}, #{category_no}, #{book_name}, #{book_writer},
+			#{book_publisher}, #{book_price}, #{book_saleprice},
+			#{book_img});
+</insert>
+
+<update id="updateBook" parameterType="book">
+	UPDATE BOOK
+	SET CATEGORY_NO= #{category_no},
+	BOOK_NAME=#{book_name}, BOOK_WRITER=#{book_writer},
+	BOOK_PUBLISHER=#{book_publisher}, BOOK_PRICE=#{book_price},
+	BOOK_SALEPRICE=#{book_price}, BOOK_=#{book_price}
+</update>
+
+<delete id="deleteBook" parameterType="book">
+	DELETE FROM BOOK WHERE BOOK_NO = #{book_no}
+</delete>
+
+<!-- 한권만 조회 -->
+<select id="selectbook" parameterType="integer" resultType="book">
+	SELECT * FROM BOOK WHERE BOOK_NO = #{book_no}
+</select>
+
+<!-- 여러권 조회 -->
+<select id="selectbooks" parameterType="integer" resultType="book">
+	SELECT * FROM BOOK WHERE BOOK_NO = #{book_no}
+</select>
+
+<select id="test" resultType="integer">
+	SELECT book_no FROM BOOK WHERE book_no = 3
+</select>
+
+<select id="getContent" parameterType="integer" resultType="contentorder">
+	SELECT CONTENT FROM CONTENT_ORDER C, BOOK B
+	WHERE C.BOOK_NO = B.BOOK_NO
+	AND B.BOOK_NO = #{book_no}
+</select>
+
+
+<!-- 전체게시글 갯수 조회 -->
+<select id="totalCount" resultType="integer">
+	SELECT COUNT(*) FROM REVIEW
+</select>
+
+<!--페이지에 해당하는 글목록(게시글) 가져오기-->
+<select id="getListPerPage" parameterType="map" resultType="article">
+	SELECT *
+		FROM (SELECT ROWNUM R_NUM, REVIEW_S.*
+				FROM ( SELECT * 
+						FROM REVIEW 
+						ORDER BY REVIEW_NO DESC
+					) REVIEW_S
+				)
+	WHERE R_NUM BETWEEN 1 AND 10
+</select>
+
+<!-- 게시글 리뷰번호로 하나 조회 -->
+<select id="getArticle" parameterType="integer" resultType="article">
+	SELECT * FROM REVIEW
+	WHERE REVIEW_NO=#{review_no }
+</select>
+
+<!-- 리뷰게시글 입력 -->
+<insert id="insertArticle" parameterType="article">
+	INSERT INTO REVIEW
+	(REVIEW_B_NO, REVIEW_TITLE, REVIEW_MEM_ID, REVIEW_CONTENT,
+	REVIEW_DATE, REVIEW_COUNT)
+	VALUES
+	(#{review_b_no}, #{review_title}, #{review_mem_id}, #{review_content},
+	SYSDATE,0)
+</insert>
+
+<!-- 리뷰게시글 수정 -->
+<update id="modifyArticle" parameterType="article">
+	UPDATE REVIEW
+	SET REVIEW_TITLE = #{review_title},
+	REVIEW_CONTENT = #{review_content}
+	WHERE REVIEW_NO = #{review_no }
+</update>
+
+<!-- 리뷰게시글 삭제 -->
+<delete id="delArticle" parameterType="integer">
+	DELETE FROM REVIEW
+	WHERE REVIEW_NO = #{review_no }
+</delete>
+
+<!--리뷰 조회수 -->
+<update id="plusReviewCount" parameterType="integer">
+	UPDATE REVIEW
+	SET REVIEW_COUNT = REVIEW_COUNT +1
+	WHERE REVIEW_NO = #{review_no }
+</update>
+
+
+
+
+<!-- 리뷰게시글 여러개 조회 -->
+<select id="getArticleList" resultType="article">
+	SELECT REVIEW_NO, REVIEW_TITLE, REVIEW_CONTENT, 
+	REVIEW_MEM_ID, TO_CHAR(REVIEW_DATE,'YY/MM/DD') AS REVIEW_DATE, REVIEW_COUNT
+	FROM REVIEW
+    ORDER BY REVIEW_NO DESC
+</select>
+
+<!-- 리뷰게시글 갯수 조회 -->
+<select id="getCntArticle" resultType="integer">
+	SELECT COUNT(*) FROM REVIEW
+	WHERE REVIEW_B_NO = #{book_no }
+</select>
+
+
+
+
+
+
+
+
+</mapper>
+
+
+
+
+<!-- 글 정보를 맵으로 전달 -->
+<!-- <insert id="selectNewArticle" parameterType="java.util.Map">
+	<![CDATA[
+	INSERT INTO REVIEW(REVIEW_NO,REVIEW_TITLE, REVIEW_CONTENT, REVIEW_IMAGE,
+	REVIEW_MEM_ID)
+	VALUES (#{review_no},#{review_title},#{review_content}, #{review_image},
+	#{review_mem_id})
+	]]>
+</insert>  -->
+	
+<!-- 추가하는 새 글에 대한 글 번호 가져오기 -->
+<!-- <select id="selectNewArticleNO" resultType="integer">
+	<![CDATA[
+	SELECE NVL(MAX(REVIEW_NO),0) +1 FROM REVIEW
+	]]>
+</select> -->	

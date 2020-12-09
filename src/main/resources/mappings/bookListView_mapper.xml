@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bookListViewDAO">
+	<!-- 베스트셀러 -->
+   <select id="getBestSeller" resultType="bookListViewVO">
+      <![CDATA[
+      SELECT BOOK.*, C.CATEGORY_NAME
+	  FROM BOOK BOOK, BOOK_CATEGORY C, (SELECT NO FROM (SELECT CNT, NO FROM (SELECT ROWNUM R_NUM, A.* FROM(SELECT B.BOOK_NO AS NO, COUNT(*) CNT
+	          FROM BOOK B, ORDERS O, ORDER_BOOK OB
+	          WHERE B.BOOK_NO = OB.BOOK_NO
+	          AND O.ORDER_NO = OB.ORDER_NO
+	          AND O.ORDER_DATE > ADD_MONTHS(SYSDATE, -6)
+	          GROUP BY B.BOOK_NO) A)
+	          WHERE R_NUM <= 30) ORDER BY CNT DESC) BEST
+	 WHERE BOOK.BOOK_NO = BEST.NO
+	   AND BOOK.CATEGORY_NO = C.CATEGORY_NO
+       ]]>
+          
+   </select>
+   
+   <!-- 신간 -->
+   <select id="getnewBook" resultType="bookListViewVO">
+      <![CDATA[
+      SELECT BOOK.*, C.CATEGORY_NAME
+	  FROM BOOK BOOK, BOOK_CATEGORY C, (SELECT BOOK_NO FROM (SELECT ROWNUM AS R_NUM, A.* FROM (SELECT *
+	          FROM BOOK
+	          WHERE BOOK_PUBLISHED_DATE IS NOT NULL
+	          ORDER BY BOOK_PUBLISHED_DATE DESC) A)
+	          WHERE R_NUM <= 30) NEW
+	 WHERE BOOK.BOOK_NO = NEW.BOOK_NO
+	   AND BOOK.CATEGORY_NO = C.CATEGORY_NO
+       ]]>
+          
+   </select>
+   
+   <!-- 스테디셀러 -->
+   <select id="getSteadySeller" resultType="bookListViewVO">
+      <![CDATA[
+      SELECT BOOK.*, C.CATEGORY_NAME
+	  FROM BOOK BOOK, BOOK_CATEGORY C, (SELECT NO FROM (SELECT CNT, NO FROM (SELECT ROWNUM R_NUM, A.* FROM(SELECT B.BOOK_NO AS NO, COUNT(*) CNT
+	          FROM BOOK B, ORDERS O, ORDER_BOOK OB
+	          WHERE B.BOOK_NO = OB.BOOK_NO
+	          AND O.ORDER_NO = OB.ORDER_NO
+	          GROUP BY B.BOOK_NO) A)
+	          WHERE R_NUM <= 30) ORDER BY CNT DESC) steady
+	 WHERE BOOK.BOOK_NO = steady.no
+	   AND BOOK.CATEGORY_NO = C.CATEGORY_NO
+       ]]>
+          
+   </select>
+
+	<!-- 책검색 -->
+	<select id="getSearchList" parameterType="String" resultType="bookListViewVO">
+		SELECT B.*, C.CATEGORY_NAME
+		  FROM BOOK B, BOOK_CATEGORY C
+		 WHERE B.CATEGORY_NO = C.CATEGORY_NO
+		   AND B.BOOK_NAME LIKE '%' || #{keyword} || '%'
+	</select>
+	
+	
+	<!-- 카테고리선택 후 북리스트조회 -->
+	<select id="bookListView" parameterType="bookListViewVO" resultType="bookListViewVO">
+		SELECT B.*, C.CATEGORY_NAME
+		  FROM BOOK B, BOOK_CATEGORY C
+		 WHERE B.CATEGORY_NO = C.CATEGORY_NO
+		   AND C.CATEGORY_CODE = #{category_code}
+		 <if test='category_main!=null and !category_main.equals("")'>
+		   AND C.CATEGORY_MAIN = #{category_main}
+		 </if>
+		 <if test='category_name!=null and !category_name.equals("")'>
+		   AND C.CATEGORY_NAME = #{category_name}
+		 </if>
+	</select>
+	
+	
+	<!-- 카트수 업데이트 -->
+	<select id="cartUpdateValue" resultType="int">
+		SELECT NVL(COUNT(*),'0') CNT
+		  FROM CART C, USERS U
+		 WHERE C.USER_ID = U.ID
+		   AND U.ID = #{id}
+	</select>
+</mapper>

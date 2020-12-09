@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bookstockmapper">
+
+<insert id="insertStock" parameterType="stock">
+	INSERT INTO BOOK_STOCK (STOCK_IDX, STORE_CODE, BOOK_NO, CNT)
+	VALUES (#{stock_idx}, #{store_code}, #{book_no}, #{cnt})
+</insert>
+
+<update id="updateStock" parameterType="stock">
+	UPDATE BOOK_STOCK
+	SET STORE_CODE = #{store_code}, BOOK_NO= #{book_no}, CNT=#{cnt}
+	WHERE STOCK_IDX =#{stock_idx}
+</update>
+
+<delete id="deleteStock" parameterType="stock">
+	DELETE FROM BOOK_STOCK WHERE BOOK_NO = #{book_no}
+</delete>
+
+<!-- <select id="selectStock" parameterType="integer" resultType="stock">
+	SELECT * FROM BOOK_STOCK WHERE BOOK_NO = #{book_no}
+</select> -->
+
+<select id="selectStocks" parameterType="integer" resultType="stock">
+	SELECT * FROM BOOK_STOCK WHERE BOOK_NO = #{book_no}
+</select>
+
+</mapper>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MainMapper">
+	<select id="getCategoryCode1" resultType="String">
+		SELECT DISTINCT CATEGORY_CODE
+		FROM BOOK_CATEGORY
+	</select>
+	
+	<select id="getCategoryMain" resultType="String" parameterType="String">
+		SELECT DISTINCT CATEGORY_MAIN
+		FROM BOOK_CATEGORY
+		WHERE CATEGORY_CODE = #{category_code}
+	</select>
+	
+	
+	<select id="getCategoryName" resultType="String" parameterType="String">
+		SELECT DISTINCT CATEGORY_NAME
+		FROM BOOK_CATEGORY
+		WHERE CATEGORY_MAIN = #{string}
+	</select>
+	
+	<!-- 베스트셀러 -->
+	<select id="getBestSellerBookNo" resultType="Integer">
+		<![CDATA[
+		SELECT NO FROM (SELECT CNT, NO FROM (SELECT ROWNUM R_NUM, A.* FROM(SELECT B.BOOK_NO AS NO, COUNT(*) CNT
+		    FROM BOOK B, ORDERS O, ORDER_BOOK OB
+		    WHERE B.BOOK_NO = OB.BOOK_NO
+		    AND O.ORDER_NO = OB.ORDER_NO
+		    AND O.ORDER_DATE > ADD_MONTHS(SYSDATE, -6)
+		    GROUP BY B.BOOK_NO) A)
+		    WHERE R_NUM <= 8) ORDER BY CNT DESC
+		 ]]>
+		    
+	</select>
+	
+	<!-- 신간 -->
+	<select id="getNewBookBookNo" resultType="Integer">
+		<![CDATA[
+		SELECT BOOK_NO FROM (SELECT ROWNUM AS R_NUM, A.* FROM (SELECT *
+		    FROM BOOK
+		    WHERE BOOK_PUBLISHED_DATE IS NOT NULL
+		    ORDER BY BOOK_PUBLISHED_DATE DESC) A)
+		    WHERE R_NUM <= 8
+		 ]]>
+		    
+	</select>
+	
+	<!-- 스테디셀러 -->
+	<select id="getSteadySellerBookNo" resultType="Integer">
+		<![CDATA[
+		SELECT NO FROM (SELECT CNT, NO FROM (SELECT ROWNUM R_NUM, A.* FROM(SELECT B.BOOK_NO AS NO, COUNT(*) CNT
+		    FROM BOOK B, ORDERS O, ORDER_BOOK OB
+		    WHERE B.BOOK_NO = OB.BOOK_NO
+		    AND O.ORDER_NO = OB.ORDER_NO
+		    GROUP BY B.BOOK_NO) A)
+		    WHERE R_NUM <= 8) ORDER BY CNT DESC
+		 ]]>
+		    
+	</select>
+	
+	<select id="getBookListByBookNo" parameterType="map" resultType="com.bit.bookstore.vo.BookVO">
+		SELECT BOOK_NO, BOOK_NAME, BOOK_IMG
+		FROM BOOK
+		WHERE 1 = 1 
+		<foreach collection="bookList" item="book_no" open=" AND " separator=" OR ">
+			BOOK_NO = #{book_no}
+		</foreach>
+		<if test="bookList == null or bookList.size == 0">
+			AND 1 = 2
+		</if>
+	</select>
+	
+	<!-- 새로운 굿즈 리스트 -->
+	<select id="getNewGoodsList" resultType="goodsvo">
+		<![CDATA[
+		SELECT * FROM (SELECT ROWNUM AS R_NUM, A.* FROM (SELECT *
+		    FROM GOODS
+		    WHERE GOODS_START_DATE IS NOT NULL
+		    ORDER BY GOODS_START_DATE DESC) A)
+		    WHERE R_NUM <= 6
+		 ]]>
+	</select>
+	
+	<insert id="insertQnA" parameterType="com.bit.bookstore.vo.QNAVO">
+		<choose>
+			<when test="qna_file_name == null or qna_file_name == ''">
+				INSERT INTO QNA(QNA_TITLE, QNA_MEM_ID, QNA_CONTENT, QNA_DATE, QNA_COUNT, QNA_ANSWER, QNA_SECRET)
+				VALUES(#{qna_title}, #{qna_mem_id}, #{qna_content}, sysdate, #{qna_count}, 0, #{qna_secret})
+			</when>
+			<otherwise>
+				INSERT INTO QNA(QNA_TITLE, QNA_MEM_ID, QNA_CONTENT, QNA_DATE, QNA_COUNT, QNA_FILE_NAME, QNA_ANSWER, QNA_SECRET)
+				VALUES(#{qna_title}, #{qna_mem_id}, #{qna_content}, sysdate, #{qna_count}, #{qna_file_name}, 0, #{qna_secret})
+			</otherwise>
+		</choose>
+	</insert>
+	
+	<update id="updateQnA" parameterType="com.bit.bookstore.vo.QNAVO">
+		UPDATE QNA
+		SET QNA_TITLE = #{qna_title},
+			QNA_CONTENT = #{qna_content},
+			QNA_SECRET = #{qna_secret},
+			QNA_FILE_NAME = #{qna_file_name}
+		WHERE QNA_NO = #{qna_no}
+	</update>
+	
+	<update id="updateQnACnt" parameterType="Integer">
+		UPDATE QNA
+		SET QNA_COUNT = QNA_COUNT + 1
+		WHERE QNA_NO = #{qna_no}
+	</update>
+	
+	<delete id="deleteQnA" parameterType="Integer">
+		DELETE FROM QNA
+		WHERE QNA_NO = #{qna_no}
+	</delete>
+	
+</mapper>

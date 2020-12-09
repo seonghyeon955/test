@@ -1,0 +1,277 @@
+@charset "UTF-8";
+
+	/*이미지롤링배너*/
+	
+	* { margin: 0; padding: 0; }
+    h2 { text-align: center; }
+    #banner-wrap {/*제일큰가장자리틀*/
+        width: 960px;
+        border: 1px solid #aaa;
+        padding: 20px 30px;
+        margin: 50px 0px 50px;;
+        /* margin-left:30px; */
+    }
+    #frame {/*사진슬라이드*/
+        width: 960px;
+        position: relative;
+        overflow: hidden; 
+      	
+    }
+    #banner { 
+    	width: 2800px;
+    }
+    	 
+   
+    .bookcard {
+		display: block;
+		margin-left: auto;
+  		margin-right: auto;	
+  		width: 320px;
+  		
+	}
+    .cardlist {
+        list-style: none;
+        float: left;
+        width: 320px;
+        margin:1px;
+        
+    }
+    #banner-wrap a { text-decoration: none; }
+    #banner-wrap > p { 
+        text-align: center; 
+        clear: both;
+        line-height: 50px; 
+    }
+   
+   
+   
+    
+    /*블로그*/
+    
+     .swiper-container {
+    position: absolute;
+	height:420px;
+	border:5px solid silver;
+	border-radius:7px;
+	box-shadow:0 0 20px #ccc inset;
+	}
+	.swiper-slide {
+		text-align:center;
+		display:flex; /* 내용을 중앙정렬 하기위해 flex 사용 */
+		align-items:center; /* 위아래 기준 중앙정렬 */
+		justify-content:center; /* 좌우 기준 중앙정렬 */
+ 	}
+	.swiper-slide img {
+		width: 100px;
+		box-shadow:0 0 5px #555;
+		max-width:100%;   /* 이미지 최대너비를 제한, 슬라이드에 이미지가 여러개가 보여질때 필요 */
+		/* 이 예제에서 필요해서 설정했습니다. 상황에따라 다를 수 있습니다. */
+	} 
+	
+	
+	
+	/*메인설명창*/
+	
+	table #mainExp {
+		margin-left: auto;
+		border: 1px solid blue;
+	
+	}
+	
+	
+	
+	#search{
+		float:right;
+	}
+	
+	
+	#all {
+		position: absolute;
+		top:35%;
+		
+		border: solid 1px red;
+		width:100%;
+	}
+	
+	
+	
+	.secondBannerR{
+		float:right; font-size:0.2em;	
+	}
+	
+	/*댓글 페이징 스타일*/
+	#pagingT {
+		margin:auto;
+	}
+	.paging {list-style : none;}
+	.paging li {
+		folat: left;
+		margin-right: 8px;
+		display:inline;
+		
+		
+	}	
+	.paging li a {
+		text-decoration:none;
+		display:bolck;
+		padding: 3px 7px;
+		border: 1px solid black;
+		font-weight:bold;
+		color:black;
+	}
+	
+	.paging .disable {
+		border: 1px solid silver;
+		padding: 3px 7px;
+		color:sliver;
+	}
+	.paging .now {/*블럭내 표시할 페이지태그(시작~끝페이지)*/
+		border: 1px solid #D38888;
+		padding: 3px 7px;
+		background-color: #D38888;
+	}
+	
+	.paging li a:hover {
+		background-color: #00B3DC;
+		color:white;
+	}
+	
+	.exchange {
+		width:200px;
+		padding-left:10px;
+		background-color: #EEEEEE;
+		color: #444444;
+	}
+	
+	.exchange2 {
+		padding-left:20px;
+		padding-top:10px;
+		padding-bottom:10px;
+		color: #666666;
+	}
+	
+	.exchange3 {
+		padding-left:60px;
+		padding-top:10px;
+		padding-bottom:10px;
+		color: #666666;
+	}
+	
+	.exchange3 ul li:last-child{
+		font-size: 0.7rem;
+	}
+	
+	.eventP img {
+		width:300px;
+	}
+	#point1 {
+		padding-left: 5px;
+		font-weight: bold;
+		float:left;
+		background-color: #EFE6E3;
+		width: 100%;
+		border: 3px solid #9F5252;
+		border-bottom: none;
+		
+	}
+	
+	#pointx {
+		float:right;
+		color: #DFCBC6;
+		padding-right: 5px;
+	}
+	
+	#pointBackColor {
+		background-color: #EFE6E3;
+	}
+	
+	#plusPopup {
+		display:none;
+		z-index:20;
+		position:absolute;
+		
+	}
+	
+	#plusPopup2 {
+		display:none;
+		z-index:20;
+		position:absolute;
+		
+	}
+	
+	#plusPopup3 {
+		display:none;
+		z-index:20;
+		position:absolute;
+	}
+	
+	#plusPopup4 {
+		display:none;
+		z-index:20;
+		position:absolute;
+	}
+	
+	#plusPopup5 {
+		display:none;
+		z-index:20;
+		position:absolute;
+	}
+	#storeBanner {
+		background-color: #EFE6E3;
+		height:50px;
+		font-size:1.2em;
+		line-height: 50px;
+		padding-left:20px;
+	}
+	#quickStoreBanner {
+		background-color: #EFE6E3;
+		height:50px;
+		font-size:1.2em;
+		line-height: 50px;
+		padding-left:20px;
+	}
+	
+	
+	#storex {
+		float:right;
+		color: #DFCBC6;
+		padding-right: 5px;
+	}
+	#storeContainer {
+		display:none;
+		z-index:40;
+		position:absolute;
+		width:500px;
+		border: 1px solid #9F5252;
+		background-color: white;
+	}
+	
+	#quickpickContainer {
+		display:none;
+		z-index:40;
+		position:absolute;
+		width:500px;
+		border: 1px solid #9F5252;
+		background-color: white;
+	}
+	
+	#storeContent {
+		background-color:white;
+	}
+	
+	#eventlist_contents {
+		padding-left:30px;
+	}
+	
+	.cls1 {
+		text-decoration: none;
+	}
+	
+	.cls2 {
+		text-align:center;
+		font-size:30px;
+	}
+	#eventlist_contents span{
+		display:block;
+		margin-left:-1.5em;
+	}

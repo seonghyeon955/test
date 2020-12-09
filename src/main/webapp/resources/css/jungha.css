@@ -1,0 +1,39 @@
+@charset "UTF-8";
+
+	.btn-outline-danger {
+	  color: #9F5252;
+	  border-color: #9F5252;
+	}
+	
+	.btn-outline-danger:hover {
+	  color: #fff;
+	  background-color: #9F5252;
+	  border-color: #9F5252;
+	}
+	
+	.condition {
+		font-size: small;
+		color: gray;
+	}
+	
+	.link {
+		color: blue;
+		text-decoration: underline;
+	}
+	
+	.red {
+		color: #9F5252;
+	}
+	
+	.hunper {
+		width: 100%;
+	}
+	
+	.center {
+		text-align: center;
+	}
+	
+	.padding {
+		padding: 5%;
+	}
+	

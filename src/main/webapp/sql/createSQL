@@ -1,0 +1,1538 @@
+-- 테이블 순서는 관계를 고려하여 한 번에 실행해도 에러가 발생하지 않게 정렬되었습니다.
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE BOOK_CATEGORY
+(
+    CATEGORY_NO        NUMBER          NOT NULL, 
+    CATEGORY_CODE      VARCHAR2(20)    NOT NULL, 
+    CATEGORY_MAIN      VARCHAR2(20)    NULL, 
+    CATEGORY_MIDDLE    VARCHAR2(20)    NULL, 
+    CATEGORY_NAME      VARCHAR2(30)    NULL, 
+    CONSTRAINT BOOK_CATEGORY_PK PRIMARY KEY (CATEGORY_NO)
+)
+/
+
+CREATE SEQUENCE BOOK_CATEGORY_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER BOOK_CATEGORY_AI_TRG
+BEFORE INSERT ON BOOK_CATEGORY 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT BOOK_CATEGORY_SEQ.NEXTVAL
+    INTO :NEW.CATEGORY_NO
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER BOOK_CATEGORY_AI_TRG;
+/
+
+--DROP SEQUENCE BOOK_CATEGORY_SEQ;
+/
+
+COMMENT ON TABLE BOOK_CATEGORY IS '카테고리테이블'
+/
+
+COMMENT ON COLUMN BOOK_CATEGORY.CATEGORY_NO IS '카테고리번호'
+/
+
+COMMENT ON COLUMN BOOK_CATEGORY.CATEGORY_CODE IS '대분류'
+/
+
+COMMENT ON COLUMN BOOK_CATEGORY.CATEGORY_MAIN IS '중분류'
+/
+
+COMMENT ON COLUMN BOOK_CATEGORY.CATEGORY_MIDDLE IS '소분류'
+/
+
+COMMENT ON COLUMN BOOK_CATEGORY.CATEGORY_NAME IS '카테고리이름'
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE USER_RATE
+(
+    rate_idx           NUMBER          NOT NULL, 
+    purchase_6month    NUMBER          NOT NULL, 
+    rate               VARCHAR2(20)    NOT NULL, 
+    point              NUMBER          NOT NULL, 
+    CONSTRAINT USER_RATE_PK PRIMARY KEY (rate_idx)
+)
+/
+
+CREATE SEQUENCE USER_RATE_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER USER_RATE_AI_TRG
+BEFORE INSERT ON USER_RATE 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT USER_RATE_SEQ.NEXTVAL
+    INTO :NEW.rate_idx
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER USER_RATE_AI_TRG;
+/
+
+--DROP SEQUENCE USER_RATE_SEQ;
+/
+
+COMMENT ON TABLE USER_RATE IS '회원등급테이블'
+/
+
+COMMENT ON COLUMN USER_RATE.rate_idx IS '등급인덱스'
+/
+
+COMMENT ON COLUMN USER_RATE.purchase_6month IS '등급조건(6개월간구매금액)'
+/
+
+COMMENT ON COLUMN USER_RATE.rate IS '등급 이름'
+/
+
+COMMENT ON COLUMN USER_RATE.point IS '적립 포인트(퍼센트)'
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE USERS
+(
+    id                 VARCHAR2(30)     NOT NULL, 
+    pwd                VARCHAR2(20)     NOT NULL, 
+    user_name          VARCHAR2(20)     NOT NULL, 
+    nickname           VARCHAR2(20)     NOT NULL, 
+    phone_number1      VARCHAR2(30)     NOT NULL, 
+    sms_receive        NUMBER           NULL, 
+    phone_number2      VARCHAR2(30)     NULL, 
+    birthday_year      NUMBER           NULL, 
+    birthday_month     NUMBER           NULL, 
+    birthday_day       NUMBER           NULL, 
+    zip_code           NUMBER           NULL, 
+    street_addr        VARCHAR2(100)    NULL, 
+    remaining_addr     VARCHAR2(50)     NULL, 
+    email              VARCHAR2(40)     NOT NULL, 
+    email_receive      NUMBER           NULL, 
+    point              NUMBER           NULL, 
+    rate_idx           NUMBER           NULL, 
+    purchase_cnt       NUMBER           NULL, 
+    purchase_6month    NUMBER           NULL, 
+    signup_date        DATE             NULL, 
+    absence            NUMBER           NOT NULL, 
+    CONSTRAINT USERS_PK PRIMARY KEY (id)
+)
+/
+
+COMMENT ON TABLE USERS IS '회원테이블'
+/
+
+COMMENT ON COLUMN USERS.id IS '아이디'
+/
+
+COMMENT ON COLUMN USERS.pwd IS '비밀번호'
+/
+
+COMMENT ON COLUMN USERS.user_name IS '이름'
+/
+
+COMMENT ON COLUMN USERS.nickname IS '닉네임'
+/
+
+COMMENT ON COLUMN USERS.phone_number1 IS '전화번호1'
+/
+
+COMMENT ON COLUMN USERS.sms_receive IS '문자수신여부'
+/
+
+COMMENT ON COLUMN USERS.phone_number2 IS '전화번호2'
+/
+
+COMMENT ON COLUMN USERS.birthday_year IS '생년월일년'
+/
+
+COMMENT ON COLUMN USERS.birthday_month IS '생년월일월'
+/
+
+COMMENT ON COLUMN USERS.birthday_day IS '생년월일일'
+/
+
+COMMENT ON COLUMN USERS.zip_code IS '우편번호'
+/
+
+COMMENT ON COLUMN USERS.street_addr IS '도로명주소'
+/
+
+COMMENT ON COLUMN USERS.remaining_addr IS '나머지주소'
+/
+
+COMMENT ON COLUMN USERS.email IS '이메일'
+/
+
+COMMENT ON COLUMN USERS.email_receive IS '이메일수신여부'
+/
+
+COMMENT ON COLUMN USERS.point IS '포인트'
+/
+
+COMMENT ON COLUMN USERS.rate_idx IS '등급인덱스'
+/
+
+COMMENT ON COLUMN USERS.purchase_cnt IS '구매 횟수'
+/
+
+COMMENT ON COLUMN USERS.purchase_6month IS '6개월 간의 구매금액'
+/
+
+COMMENT ON COLUMN USERS.signup_date IS '가입일자'
+/
+
+COMMENT ON COLUMN USERS.absence IS '회원탈퇴 유무(탈퇴: 1/ 회원: 0)'
+/
+
+ALTER TABLE USERS
+    ADD CONSTRAINT FK_USERS_rate_idx_USER_RATE_ra FOREIGN KEY (rate_idx)
+        REFERENCES USER_RATE (rate_idx)
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE BOOK
+(
+    book_no                NUMBER            NOT NULL, 
+    CATEGORY_NO            NUMBER            NULL, 
+    book_name              VARCHAR2(50)      NOT NULL, 
+    book_writer            VARCHAR2(50)      NOT NULL, 
+    book_publisher         VARCHAR2(50)      NOT NULL, 
+    book_price             NUMBER            NOT NULL, 
+    book_saleprice         NUMBER            NULL, 
+    book_info              VARCHAR2(3000)    NULL, 
+    book_published_date    DATE              NULL, 
+    book_total_page        NUMBER            NULL, 
+    book_entered_date      DATE              NULL, 
+    ebook                  NUMBER            NULL, 
+    book_isbn              NUMBER            NULL, 
+    book_img               VARCHAR2(100)     NULL, 
+    book_size              VARCHAR2(50)      NULL, 
+    b_index                VARCHAR2(100)     NULL, 
+    CONSTRAINT BOOK_PK PRIMARY KEY (book_no)
+)
+/
+
+CREATE SEQUENCE BOOK_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER BOOK_AI_TRG
+BEFORE INSERT ON BOOK 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT BOOK_SEQ.NEXTVAL
+    INTO :NEW.book_no
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER BOOK_AI_TRG;
+/
+
+--DROP SEQUENCE BOOK_SEQ;
+/
+
+COMMENT ON TABLE BOOK IS '책테이블'
+/
+
+COMMENT ON COLUMN BOOK.book_no IS '책 상품번호'
+/
+
+COMMENT ON COLUMN BOOK.CATEGORY_NO IS '책분류'
+/
+
+COMMENT ON COLUMN BOOK.book_name IS '책제목'
+/
+
+COMMENT ON COLUMN BOOK.book_writer IS '저자'
+/
+
+COMMENT ON COLUMN BOOK.book_publisher IS '출판사'
+/
+
+COMMENT ON COLUMN BOOK.book_price IS '정가'
+/
+
+COMMENT ON COLUMN BOOK.book_saleprice IS '판매가'
+/
+
+COMMENT ON COLUMN BOOK.book_info IS '책소개'
+/
+
+COMMENT ON COLUMN BOOK.book_published_date IS '출판일'
+/
+
+COMMENT ON COLUMN BOOK.book_total_page IS '총페이지수'
+/
+
+COMMENT ON COLUMN BOOK.book_entered_date IS '입고일'
+/
+
+COMMENT ON COLUMN BOOK.ebook IS 'ebook여부'
+/
+
+COMMENT ON COLUMN BOOK.book_isbn IS 'isbn번호'
+/
+
+COMMENT ON COLUMN BOOK.book_img IS '책 대표 이미지 경로'
+/
+
+COMMENT ON COLUMN BOOK.book_size IS '책 사이즈'
+/
+
+COMMENT ON COLUMN BOOK.b_index IS '목차'
+/
+
+ALTER TABLE BOOK
+    ADD CONSTRAINT FK_BOOK_CATEGORY_NO_BOOK_CATEG FOREIGN KEY (CATEGORY_NO)
+        REFERENCES BOOK_CATEGORY (CATEGORY_NO)
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE STORE
+(
+    store_code            VARCHAR2(30)     NOT NULL, 
+    store_pwd             VARCHAR2(20)     NOT NULL, 
+    zip_code              NUMBER           NOT NULL, 
+    street_addr           VARCHAR2(100)    NOT NULL, 
+    remaining_addr        VARCHAR2(50)     NOT NULL, 
+    email                 VARCHAR2(40)     NOT NULL, 
+    store_phone_number    VARCHAR2(30)     NOT NULL, 
+    store_name            VARCHAR2(50)     NOT NULL, 
+    store_approval        VARCHAR2(20)     NULL, 
+    CONSTRAINT STORE_PK PRIMARY KEY (store_code)
+)
+/
+
+COMMENT ON TABLE STORE IS '지점테이블'
+/
+
+COMMENT ON COLUMN STORE.store_code IS '지점번호'
+/
+
+COMMENT ON COLUMN STORE.store_pwd IS '지점비밀번호'
+/
+
+COMMENT ON COLUMN STORE.zip_code IS '우편번호'
+/
+
+COMMENT ON COLUMN STORE.street_addr IS '도로명주소'
+/
+
+COMMENT ON COLUMN STORE.remaining_addr IS '나머지주소'
+/
+
+COMMENT ON COLUMN STORE.email IS '이메일'
+/
+
+COMMENT ON COLUMN STORE.store_phone_number IS '전화번호'
+/
+
+COMMENT ON COLUMN STORE.store_name IS '지점 이름'
+/
+
+COMMENT ON COLUMN STORE.store_approval IS '승인여부(승인전/영업중/폐점)'
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE ORDERS
+(
+    ORDER_NO                     NUMBER           NOT NULL, 
+    ORDER_USER_ID                VARCHAR2(30)     NOT NULL, 
+    ORDER_RECV_NAME              VARCHAR2(20)     NOT NULL, 
+    ORDER_RECV_PHONE             VARCHAR(20)      NULL, 
+    ORDER_DATE                   DATE             NULL, 
+    ORDER_TOTAL_COST             NUMBER           NOT NULL, 
+    ORDER_MESSAGE                VARCHAR2(100)    NULL, 
+    ORDER_RECV_STREET_ADDR       VARCHAR2(100)    NULL, 
+    ORDER_RECV_REMAINING_ADDR    VARCHAR2(50)     NULL, 
+    ORDER_RECV_ZIP_CODE          NUMBER           NULL, 
+    state                        VARCHAR2(20)     NULL, 
+    ORDER_ACCU_POINT             NUMBER           NULL, 
+    ORDER_NONMEM_EMAIL           VARCHAR2(40)     NULL, 
+    CONSTRAINT ORDERS_PK PRIMARY KEY (ORDER_NO)
+)
+/
+
+CREATE SEQUENCE ORDERS_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER ORDERS_AI_TRG
+BEFORE INSERT ON ORDERS 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT ORDERS_SEQ.NEXTVAL
+    INTO :NEW.ORDER_NO
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER ORDERS_AI_TRG;
+/
+
+--DROP SEQUENCE ORDERS_SEQ;
+/
+
+COMMENT ON TABLE ORDERS IS '주문테이블'
+/
+
+COMMENT ON COLUMN ORDERS.ORDER_NO IS '주문번호'
+/
+
+COMMENT ON COLUMN ORDERS.ORDER_USER_ID IS '회원아이디'
+/
+
+COMMENT ON COLUMN ORDERS.ORDER_RECV_NAME IS '받는사람이름'
+/
+
+COMMENT ON COLUMN ORDERS.ORDER_RECV_PHONE IS '받는사람연락처'
+/
+
+COMMENT ON COLUMN ORDERS.ORDER_DATE IS '주문날짜'
+/
+
+COMMENT ON COLUMN ORDERS.ORDER_TOTAL_COST IS '주문총가격'
+/
+
+COMMENT ON COLUMN ORDERS.ORDER_MESSAGE IS '요청사항'
+/
+
+COMMENT ON COLUMN ORDERS.ORDER_RECV_STREET_ADDR IS '받는사람 도로명주소'
+/
+
+COMMENT ON COLUMN ORDERS.ORDER_RECV_REMAINING_ADDR IS '받는 사람 나머지 주소'
+/
+
+COMMENT ON COLUMN ORDERS.ORDER_RECV_ZIP_CODE IS '받는사람 우편번호'
+/
+
+COMMENT ON COLUMN ORDERS.state IS '배송상태'
+/
+
+COMMENT ON COLUMN ORDERS.ORDER_ACCU_POINT IS '적립포인트'
+/
+
+COMMENT ON COLUMN ORDERS.ORDER_NONMEM_EMAIL IS '비회원 이메일'
+/
+
+ALTER TABLE ORDERS
+    ADD CONSTRAINT FK_ORDERS_ORDER_USER_ID_USERS_ FOREIGN KEY (ORDER_USER_ID)
+        REFERENCES USERS (id)
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE COUPON
+(
+    coupon_number      NUMBER          NOT NULL, 
+    coupon_name        VARCHAR2(30)    NOT NULL, 
+    discount           NUMBER          NOT NULL, 
+    start_date         DATE            NOT NULL, 
+    end_date           DATE            NULL, 
+    coupon_rate        VARCHAR2(20)    NULL, 
+    perchase_amount    NUMBER          NULL, 
+    uit                VARCHAR2(20)    NULL, 
+    overlap            NUMBER          NULL, 
+    CONSTRAINT COUPON_PK PRIMARY KEY (coupon_number)
+)
+/
+
+CREATE SEQUENCE COUPON_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER COUPON_AI_TRG
+BEFORE INSERT ON COUPON 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT COUPON_SEQ.NEXTVAL
+    INTO :NEW.coupon_number
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER COUPON_AI_TRG;
+/
+
+--DROP SEQUENCE COUPON_SEQ;
+/
+
+COMMENT ON TABLE COUPON IS '쿠폰테이블'
+/
+
+COMMENT ON COLUMN COUPON.coupon_number IS '쿠폰번호'
+/
+
+COMMENT ON COLUMN COUPON.coupon_name IS '쿠폰이름'
+/
+
+COMMENT ON COLUMN COUPON.discount IS '할인금액'
+/
+
+COMMENT ON COLUMN COUPON.start_date IS '쿠폰시작날짜'
+/
+
+COMMENT ON COLUMN COUPON.end_date IS '쿠폰종료날짜'
+/
+
+COMMENT ON COLUMN COUPON.coupon_rate IS '쿠폰등급'
+/
+
+COMMENT ON COLUMN COUPON.perchase_amount IS '구매 금액'
+/
+
+COMMENT ON COLUMN COUPON.uit IS '할인 단위(원, %)'
+/
+
+COMMENT ON COLUMN COUPON.overlap IS '중복 가능 여부(중복가능시1, 아닐시0)'
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE goods
+(
+    goods_code          NUMBER           NOT NULL, 
+    goods_name          VARCHAR2(50)     NOT NULL, 
+    goods_price         NUMBER           NOT NULL, 
+    goods_saleprice     NUMBER           NULL, 
+    goods_start_date    DATE             NULL, 
+    goods_end_date      DATE             NULL, 
+    goods_image         VARCHAR2(100)    NULL, 
+    CONSTRAINT GOODS_PK PRIMARY KEY (goods_code)
+)
+/
+
+CREATE SEQUENCE goods_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER goods_AI_TRG
+BEFORE INSERT ON goods 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT goods_SEQ.NEXTVAL
+    INTO :NEW.goods_code
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER goods_AI_TRG;
+/
+
+--DROP SEQUENCE goods_SEQ;
+/
+
+COMMENT ON TABLE goods IS '굿즈테이블'
+/
+
+COMMENT ON COLUMN goods.goods_code IS '굿즈 상품번호'
+/
+
+COMMENT ON COLUMN goods.goods_name IS '굿즈이름'
+/
+
+COMMENT ON COLUMN goods.goods_price IS '굿즈정가'
+/
+
+COMMENT ON COLUMN goods.goods_saleprice IS '판매가'
+/
+
+COMMENT ON COLUMN goods.goods_start_date IS '판매시작날짜'
+/
+
+COMMENT ON COLUMN goods.goods_end_date IS '판매종료날짜'
+/
+
+COMMENT ON COLUMN goods.goods_image IS '굿즈이미지'
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE REVIEW
+(
+    REVIEW_NO         NUMBER            NOT NULL, 
+    REVIEW_B_NO       NUMBER            NOT NULL, 
+    REVIEW_TITLE      VARCHAR2(100)     NULL, 
+    REVIEW_MEM_ID     VARCHAR2(30)      NOT NULL, 
+    REVIEW_CONTENT    VARCHAR2(1000)    NULL, 
+    REVIEW_DATE       DATE              NULL, 
+    REVIEW_COUNT      NUMBER            NULL, 
+    REVIEW_STATUS     NUMBER            NULL, 
+    CONSTRAINT REVIEW_PK PRIMARY KEY (REVIEW_NO)
+)
+/
+
+CREATE SEQUENCE REVIEW_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER REVIEW_AI_TRG
+BEFORE INSERT ON REVIEW 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT REVIEW_SEQ.NEXTVAL
+    INTO :NEW.REVIEW_NO
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER REVIEW_AI_TRG;
+/
+
+--DROP SEQUENCE REVIEW_SEQ;
+/
+
+COMMENT ON COLUMN REVIEW.REVIEW_NO IS '리뷰번호'
+/
+
+COMMENT ON COLUMN REVIEW.REVIEW_B_NO IS '책상품번호'
+/
+
+COMMENT ON COLUMN REVIEW.REVIEW_TITLE IS '리뷰제목'
+/
+
+COMMENT ON COLUMN REVIEW.REVIEW_MEM_ID IS '회원아이디'
+/
+
+COMMENT ON COLUMN REVIEW.REVIEW_CONTENT IS '리뷰내용'
+/
+
+COMMENT ON COLUMN REVIEW.REVIEW_DATE IS '리뷰작성일'
+/
+
+COMMENT ON COLUMN REVIEW.REVIEW_COUNT IS '리뷰조회수'
+/
+
+COMMENT ON COLUMN REVIEW.REVIEW_STATUS IS '리뷰삭제여부'
+/
+
+ALTER TABLE REVIEW
+    ADD CONSTRAINT FK_REVIEW_REVIEW_B_NO_BOOK_boo FOREIGN KEY (REVIEW_B_NO)
+        REFERENCES BOOK (book_no)
+/
+
+ALTER TABLE REVIEW
+    ADD CONSTRAINT FK_REVIEW_REVIEW_MEM_ID_USERS_ FOREIGN KEY (REVIEW_MEM_ID)
+        REFERENCES USERS (id)
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE QNA
+(
+    QNA_NO           NUMBER            NOT NULL, 
+    QNA_TITLE        VARCHAR2(100)     NOT NULL, 
+    QNA_MEM_ID       VARCHAR2(30)      NOT NULL, 
+    QNA_CONTENT      VARCHAR2(1000)    NOT NULL, 
+    QNA_DATE         DATE              NOT NULL, 
+    QNA_COUNT        NUMBER            NOT NULL, 
+    QNA_FILE_NAME    VARCHAR2(50)      NULL, 
+    QNA_PWD          NUMBER            NOT NULL, 
+    QNA_ANSWER       NUMBER            NULL, 
+    QNA_SECRET       NUMBER            NULL, 
+    CONSTRAINT QNA_PK PRIMARY KEY (QNA_NO)
+)
+/
+
+CREATE SEQUENCE QNA_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER QNA_AI_TRG
+BEFORE INSERT ON QNA 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT QNA_SEQ.NEXTVAL
+    INTO :NEW.QNA_NO
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER QNA_AI_TRG;
+/
+
+--DROP SEQUENCE QNA_SEQ;
+/
+
+COMMENT ON TABLE QNA IS '문의게시판'
+/
+
+COMMENT ON COLUMN QNA.QNA_NO IS '문의번호'
+/
+
+COMMENT ON COLUMN QNA.QNA_TITLE IS '문의제목'
+/
+
+COMMENT ON COLUMN QNA.QNA_MEM_ID IS '문의작성자'
+/
+
+COMMENT ON COLUMN QNA.QNA_CONTENT IS '문의내용'
+/
+
+COMMENT ON COLUMN QNA.QNA_DATE IS '문의작성일'
+/
+
+COMMENT ON COLUMN QNA.QNA_COUNT IS '문의조회수'
+/
+
+COMMENT ON COLUMN QNA.QNA_FILE_NAME IS '첨부파일'
+/
+
+COMMENT ON COLUMN QNA.QNA_PWD IS '비밀번호'
+/
+
+COMMENT ON COLUMN QNA.QNA_ANSWER IS '응답여부(0-응답안함,1-응답완료)'
+/
+
+COMMENT ON COLUMN QNA.QNA_SECRET IS '비밀글(0-비밀, 1-오픈)'
+/
+
+ALTER TABLE QNA
+    ADD CONSTRAINT FK_QNA_QNA_MEM_ID_USERS_id FOREIGN KEY (QNA_MEM_ID)
+        REFERENCES USERS (id)
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE EVENT
+(
+    event_idx           NUMBER            NOT NULL, 
+    event_type          VARCHAR2(20)      NOT NULL, 
+    event_title         VARCHAR2(100)     NOT NULL, 
+    event_start         DATE              NOT NULL, 
+    event_end           DATE              NOT NULL, 
+    event_content       VARCHAR2(1000)    NOT NULL, 
+    views               NUMBER            NULL, 
+    img_path            VARCHAR2(100)     NULL, 
+    event_file_name     VARCHAR2(50)      NULL, 
+    event_exist         NUMBER            NOT NULL, 
+    event_write_date    DATE              NOT NULL, 
+    event_book_rate     NUMBER            NULL, 
+    CATEGORY_NO         NUMBER            NULL, 
+    book_no             NUMBER            NULL, 
+    CONSTRAINT EVENT_PK PRIMARY KEY (event_idx)
+)
+/
+
+CREATE SEQUENCE EVENT_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER EVENT_AI_TRG
+BEFORE INSERT ON EVENT 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT EVENT_SEQ.NEXTVAL
+    INTO :NEW.event_idx
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER EVENT_AI_TRG;
+/
+
+--DROP SEQUENCE EVENT_SEQ;
+/
+
+COMMENT ON TABLE EVENT IS '이벤트프로모션'
+/
+
+COMMENT ON COLUMN EVENT.event_idx IS '이벤트인덱스'
+/
+
+COMMENT ON COLUMN EVENT.event_type IS '이벤트종류'
+/
+
+COMMENT ON COLUMN EVENT.event_title IS '제목'
+/
+
+COMMENT ON COLUMN EVENT.event_start IS '이벤트시작날짜'
+/
+
+COMMENT ON COLUMN EVENT.event_end IS '이벤트끝날짜'
+/
+
+COMMENT ON COLUMN EVENT.event_content IS '내용'
+/
+
+COMMENT ON COLUMN EVENT.views IS '조회수'
+/
+
+COMMENT ON COLUMN EVENT.img_path IS '이미지저장경로'
+/
+
+COMMENT ON COLUMN EVENT.event_file_name IS '첨부파일'
+/
+
+COMMENT ON COLUMN EVENT.event_exist IS '게시글존재여부'
+/
+
+COMMENT ON COLUMN EVENT.event_write_date IS '게시글작성일'
+/
+
+COMMENT ON COLUMN EVENT.event_book_rate IS '책이벤트할인율'
+/
+
+COMMENT ON COLUMN EVENT.CATEGORY_NO IS '책분류(카테고리번호)'
+/
+
+COMMENT ON COLUMN EVENT.book_no IS '책상품번호'
+/
+
+ALTER TABLE EVENT
+    ADD CONSTRAINT FK_EVENT_CATEGORY_NO_BOOK_CATE FOREIGN KEY (CATEGORY_NO)
+        REFERENCES BOOK_CATEGORY (CATEGORY_NO)
+/
+
+ALTER TABLE EVENT
+    ADD CONSTRAINT FK_EVENT_book_no_BOOK_book_no FOREIGN KEY (book_no)
+        REFERENCES BOOK (book_no)
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE USER_CONTENT
+(
+    idx              NUMBER          NOT NULL, 
+    user_id          VARCHAR2(30)    NOT NULL, 
+    POINT_CONTENT    NUMBER          NOT NULL, 
+    ORDER_NO         NUMBER          NULL, 
+    POINT            VARCHAR2(50)    NULL, 
+    CONSTRAINT USER_CONTENT_PK PRIMARY KEY (idx)
+)
+/
+
+CREATE SEQUENCE USER_CONTENT_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER USER_CONTENT_AI_TRG
+BEFORE INSERT ON USER_CONTENT 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT USER_CONTENT_SEQ.NEXTVAL
+    INTO :NEW.idx
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER USER_CONTENT_AI_TRG;
+/
+
+--DROP SEQUENCE USER_CONTENT_SEQ;
+/
+
+COMMENT ON TABLE USER_CONTENT IS '유저들의 발급받은 쿠폰 테이블'
+/
+
+COMMENT ON COLUMN USER_CONTENT.idx IS '인덱스'
+/
+
+COMMENT ON COLUMN USER_CONTENT.user_id IS '아이디'
+/
+
+COMMENT ON COLUMN USER_CONTENT.POINT_CONTENT IS '포인트 내용'
+/
+
+COMMENT ON COLUMN USER_CONTENT.ORDER_NO IS '주문번호'
+/
+
+COMMENT ON COLUMN USER_CONTENT.POINT IS '포인트'
+/
+
+ALTER TABLE USER_CONTENT
+    ADD CONSTRAINT FK_USER_CONTENT_user_id_USERS_ FOREIGN KEY (user_id)
+        REFERENCES USERS (id)
+/
+
+ALTER TABLE USER_CONTENT
+    ADD CONSTRAINT FK_USER_CONTENT_POINT_CONTENT_ FOREIGN KEY (POINT_CONTENT)
+        REFERENCES COUPON (coupon_number)
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE CONTENT_ORDER
+(
+    content_idx      NUMBER          NOT NULL, 
+    book_no          NUMBER          NULL, 
+    content_order    NUMBER          NULL, 
+    content          VARCHAR2(50)    NULL, 
+    CONSTRAINT CONTENT_ORDER_PK PRIMARY KEY (content_idx)
+)
+/
+
+CREATE SEQUENCE CONTENT_ORDER_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER CONTENT_ORDER_AI_TRG
+BEFORE INSERT ON CONTENT_ORDER 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT CONTENT_ORDER_SEQ.NEXTVAL
+    INTO :NEW.content_idx
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER CONTENT_ORDER_AI_TRG;
+/
+
+--DROP SEQUENCE CONTENT_ORDER_SEQ;
+/
+
+COMMENT ON COLUMN CONTENT_ORDER.content_idx IS '목차인덱스'
+/
+
+COMMENT ON COLUMN CONTENT_ORDER.book_no IS '책 상품번호'
+/
+
+COMMENT ON COLUMN CONTENT_ORDER.content_order IS '목차순서'
+/
+
+COMMENT ON COLUMN CONTENT_ORDER.content IS '목차내용'
+/
+
+ALTER TABLE CONTENT_ORDER
+    ADD CONSTRAINT FK_CONTENT_ORDER_book_no_BOOK_ FOREIGN KEY (book_no)
+        REFERENCES BOOK (book_no)
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE BOOK_STOCK
+(
+    stock_idx     NUMBER          NOT NULL, 
+    store_code    VARCHAR2(30)    NOT NULL, 
+    book_no       NUMBER          NOT NULL, 
+    cnt           NUMBER          NOT NULL, 
+    CONSTRAINT BOOK_STOCK_PK PRIMARY KEY (stock_idx)
+)
+/
+
+CREATE SEQUENCE BOOK_STOCK_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER BOOK_STOCK_AI_TRG
+BEFORE INSERT ON BOOK_STOCK 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT BOOK_STOCK_SEQ.NEXTVAL
+    INTO :NEW.stock_idx
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER BOOK_STOCK_AI_TRG;
+/
+
+--DROP SEQUENCE BOOK_STOCK_SEQ;
+/
+
+COMMENT ON TABLE BOOK_STOCK IS '재고관리테이블'
+/
+
+COMMENT ON COLUMN BOOK_STOCK.stock_idx IS '재고인덱스'
+/
+
+COMMENT ON COLUMN BOOK_STOCK.store_code IS '지점번호'
+/
+
+COMMENT ON COLUMN BOOK_STOCK.book_no IS '책 상품번호'
+/
+
+COMMENT ON COLUMN BOOK_STOCK.cnt IS '개수'
+/
+
+ALTER TABLE BOOK_STOCK
+    ADD CONSTRAINT FK_BOOK_STOCK_store_code_STORE FOREIGN KEY (store_code)
+        REFERENCES STORE (store_code)
+/
+
+ALTER TABLE BOOK_STOCK
+    ADD CONSTRAINT FK_BOOK_STOCK_book_no_BOOK_boo FOREIGN KEY (book_no)
+        REFERENCES BOOK (book_no)
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE book_image
+(
+    img_idx      NUMBER           NOT NULL, 
+    book_code    NUMBER           NOT NULL, 
+    img_path     VARCHAR2(100)    NOT NULL, 
+    CONSTRAINT BOOK_IMAGE_PK PRIMARY KEY (img_idx)
+)
+/
+
+CREATE SEQUENCE book_image_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER book_image_AI_TRG
+BEFORE INSERT ON book_image 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT book_image_SEQ.NEXTVAL
+    INTO :NEW.img_idx
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER book_image_AI_TRG;
+/
+
+--DROP SEQUENCE book_image_SEQ;
+/
+
+COMMENT ON TABLE book_image IS '책이미지테이블'
+/
+
+COMMENT ON COLUMN book_image.img_idx IS '이미지번호'
+/
+
+COMMENT ON COLUMN book_image.book_code IS '책 상품번호'
+/
+
+COMMENT ON COLUMN book_image.img_path IS '이미지파일경로'
+/
+
+ALTER TABLE book_image
+    ADD CONSTRAINT FK_book_image_book_code_BOOK_b FOREIGN KEY (book_code)
+        REFERENCES BOOK (book_no)
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE CART
+(
+    cart_idx      NUMBER          NOT NULL, 
+    user_id       VARCHAR2(30)    NOT NULL, 
+    book_no       NUMBER          NOT NULL, 
+    cnt           NUMBER          NOT NULL, 
+    store_code    VARCHAR2(30)    NOT NULL, 
+    CONSTRAINT CART_PK PRIMARY KEY (cart_idx)
+)
+/
+
+CREATE SEQUENCE CART_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER CART_AI_TRG
+BEFORE INSERT ON CART 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT CART_SEQ.NEXTVAL
+    INTO :NEW.cart_idx
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER CART_AI_TRG;
+/
+
+--DROP SEQUENCE CART_SEQ;
+/
+
+COMMENT ON TABLE CART IS '장바구니테이블'
+/
+
+COMMENT ON COLUMN CART.cart_idx IS '장바구니번호'
+/
+
+COMMENT ON COLUMN CART.user_id IS '아이디'
+/
+
+COMMENT ON COLUMN CART.book_no IS '책 상품번호'
+/
+
+COMMENT ON COLUMN CART.cnt IS '개수'
+/
+
+COMMENT ON COLUMN CART.store_code IS '지점번호'
+/
+
+ALTER TABLE CART
+    ADD CONSTRAINT FK_CART_user_id_USERS_id FOREIGN KEY (user_id)
+        REFERENCES USERS (id)
+/
+
+ALTER TABLE CART
+    ADD CONSTRAINT FK_CART_book_no_BOOK_book_no FOREIGN KEY (book_no)
+        REFERENCES BOOK (book_no)
+/
+
+ALTER TABLE CART
+    ADD CONSTRAINT FK_CART_store_code_STORE_store FOREIGN KEY (store_code)
+        REFERENCES STORE (store_code)
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE ORDER_BOOK
+(
+    ORDER_B_NO             NUMBER          NOT NULL, 
+    ORDER_NO               NUMBER          NOT NULL, 
+    ORDER_OFFICE_NO        VARCHAR2(30)    NOT NULL, 
+    BOOK_NO                NUMBER          NOT NULL, 
+    ORDER_B_CNT            NUMBER          NOT NULL, 
+    ORDER_delivery_type    NUMBER          NULL, 
+    state                  VARCHAR2(20)    NULL, 
+    CONSTRAINT ORDER_BOOK_PK PRIMARY KEY (ORDER_B_NO)
+)
+/
+
+CREATE SEQUENCE ORDER_BOOK_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER ORDER_BOOK_AI_TRG
+BEFORE INSERT ON ORDER_BOOK 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT ORDER_BOOK_SEQ.NEXTVAL
+    INTO :NEW.ORDER_B_NO
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER ORDER_BOOK_AI_TRG;
+/
+
+--DROP SEQUENCE ORDER_BOOK_SEQ;
+/
+
+COMMENT ON TABLE ORDER_BOOK IS '주문하위 책테이블'
+/
+
+COMMENT ON COLUMN ORDER_BOOK.ORDER_B_NO IS '주문하위번호'
+/
+
+COMMENT ON COLUMN ORDER_BOOK.ORDER_NO IS '주문번호'
+/
+
+COMMENT ON COLUMN ORDER_BOOK.ORDER_OFFICE_NO IS '지점번호'
+/
+
+COMMENT ON COLUMN ORDER_BOOK.BOOK_NO IS '책상품번호'
+/
+
+COMMENT ON COLUMN ORDER_BOOK.ORDER_B_CNT IS '판매수량'
+/
+
+COMMENT ON COLUMN ORDER_BOOK.ORDER_delivery_type IS '배송방법'
+/
+
+COMMENT ON COLUMN ORDER_BOOK.state IS '배송상태'
+/
+
+ALTER TABLE ORDER_BOOK
+    ADD CONSTRAINT FK_ORDER_BOOK_ORDER_NO_ORDERS_ FOREIGN KEY (ORDER_NO)
+        REFERENCES ORDERS (ORDER_NO)
+/
+
+ALTER TABLE ORDER_BOOK
+    ADD CONSTRAINT FK_ORDER_BOOK_ORDER_OFFICE_NO_ FOREIGN KEY (ORDER_OFFICE_NO)
+        REFERENCES STORE (store_code)
+/
+
+ALTER TABLE ORDER_BOOK
+    ADD CONSTRAINT FK_ORDER_BOOK_BOOK_NO_BOOK_boo FOREIGN KEY (BOOK_NO)
+        REFERENCES BOOK (book_no)
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE REVIEW_COMMENT
+(
+    REVIEW_CO_NO         NUMBER           NOT NULL, 
+    REVIEW_NO            NUMBER           NOT NULL, 
+    REVIEW_CO_DATE       DATE             NULL, 
+    REVIEW_CO_CONTENT    VARCHAR2(500)    NULL, 
+    REVIEW_CO_ID         VARCHAR2(30)     NOT NULL, 
+    CONSTRAINT REVIEW_COMMENT_PK PRIMARY KEY (REVIEW_CO_NO)
+)
+/
+
+CREATE SEQUENCE REVIEW_COMMENT_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER REVIEW_COMMENT_AI_TRG
+BEFORE INSERT ON REVIEW_COMMENT 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT REVIEW_COMMENT_SEQ.NEXTVAL
+    INTO :NEW.REVIEW_CO_NO
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER REVIEW_COMMENT_AI_TRG;
+/
+
+--DROP SEQUENCE REVIEW_COMMENT_SEQ;
+/
+
+COMMENT ON TABLE REVIEW_COMMENT IS '리뷰댓글'
+/
+
+COMMENT ON COLUMN REVIEW_COMMENT.REVIEW_CO_NO IS '리뷰댓글번호'
+/
+
+COMMENT ON COLUMN REVIEW_COMMENT.REVIEW_NO IS '리뷰번호'
+/
+
+COMMENT ON COLUMN REVIEW_COMMENT.REVIEW_CO_DATE IS '댓글작성날짜'
+/
+
+COMMENT ON COLUMN REVIEW_COMMENT.REVIEW_CO_CONTENT IS '리뷰댓글내용'
+/
+
+COMMENT ON COLUMN REVIEW_COMMENT.REVIEW_CO_ID IS '댓글작성자'
+/
+
+ALTER TABLE REVIEW_COMMENT
+    ADD CONSTRAINT FK_REVIEW_TO_REVIEW_COMMENT_1 FOREIGN KEY (REVIEW_NO)
+        REFERENCES REVIEW (REVIEW_NO)
+/
+
+ALTER TABLE REVIEW_COMMENT
+    ADD CONSTRAINT FK_REVIEW_COMMENT_REVIEW_CO_ID FOREIGN KEY (REVIEW_CO_ID)
+        REFERENCES USERS (id)
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE NOTICE
+(
+    NOTICE_NO         NUMBER            NOT NULL, 
+    NOTICE_TITLE      VARCHAR2(80)      NOT NULL, 
+    NOTICE_CONTENT    VARCHAR2(1000)    NOT NULL, 
+    NOTICE_DATE       DATE              NULL, 
+    NOTICE_COUNT      NUMBER            NULL, 
+    CONSTRAINT NOTICE_PK PRIMARY KEY (NOTICE_NO)
+)
+/
+
+CREATE SEQUENCE NOTICE_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER NOTICE_AI_TRG
+BEFORE INSERT ON NOTICE 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT NOTICE_SEQ.NEXTVAL
+    INTO :NEW.NOTICE_NO
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER NOTICE_AI_TRG;
+/
+
+--DROP SEQUENCE NOTICE_SEQ;
+/
+
+COMMENT ON TABLE NOTICE IS '공지사항'
+/
+
+COMMENT ON COLUMN NOTICE.NOTICE_NO IS '공지번호'
+/
+
+COMMENT ON COLUMN NOTICE.NOTICE_TITLE IS '공지제목'
+/
+
+COMMENT ON COLUMN NOTICE.NOTICE_CONTENT IS '공지내용'
+/
+
+COMMENT ON COLUMN NOTICE.NOTICE_DATE IS '공지작성일'
+/
+
+COMMENT ON COLUMN NOTICE.NOTICE_COUNT IS '공지조회수'
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE QNA_COMMENT
+(
+    QNA_CO_NO            NUMBER            NOT NULL, 
+    QNA_NO               NUMBER            NOT NULL, 
+    QNA_CO_DATE          DATE              NULL, 
+    QNA_CO_CONTENT       VARCHAR2(1000)    NOT NULL, 
+    QNA_CO_STORE_CODE    VARCHAR2(30)      NOT NULL, 
+    CONSTRAINT QNA_COMMENT_PK PRIMARY KEY (QNA_CO_NO)
+)
+/
+
+CREATE SEQUENCE QNA_COMMENT_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER QNA_COMMENT_AI_TRG
+BEFORE INSERT ON QNA_COMMENT 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT QNA_COMMENT_SEQ.NEXTVAL
+    INTO :NEW.QNA_CO_NO
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER QNA_COMMENT_AI_TRG;
+/
+
+--DROP SEQUENCE QNA_COMMENT_SEQ;
+/
+
+COMMENT ON TABLE QNA_COMMENT IS '문의댓글'
+/
+
+COMMENT ON COLUMN QNA_COMMENT.QNA_CO_NO IS '문의댓글번호'
+/
+
+COMMENT ON COLUMN QNA_COMMENT.QNA_NO IS '문의번호'
+/
+
+COMMENT ON COLUMN QNA_COMMENT.QNA_CO_DATE IS '문의댓글작성일'
+/
+
+COMMENT ON COLUMN QNA_COMMENT.QNA_CO_CONTENT IS '문의댓글내용'
+/
+
+COMMENT ON COLUMN QNA_COMMENT.QNA_CO_STORE_CODE IS '문의댓글작성자'
+/
+
+ALTER TABLE QNA_COMMENT
+    ADD CONSTRAINT FK_QNA_TO_QNA_COMMENT_1 FOREIGN KEY (QNA_NO)
+        REFERENCES QNA (QNA_NO)
+/
+
+ALTER TABLE QNA_COMMENT
+    ADD CONSTRAINT FK_QNA_COMMENT_QNA_CO_STORE_CO FOREIGN KEY (QNA_CO_STORE_CODE)
+        REFERENCES STORE (store_code)
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE MYPAGE_Return_Exchange
+(
+    ORDER_NO                         INT             NOT NULL, 
+    book_name                        VARCHAR2(20)    NULL, 
+    ORDER_RECV_NAME                  VARCHAR2(20)    NULL, 
+    ORDER_DATE                       VARCHAR2(20)    NULL, 
+    CATEGORY_CODE                    NUMBER          NULL, 
+    Return_Exchange_delivery_type    NUMBER          NULL, 
+    Return_Exchange_status           NUMBER          NULL, 
+    Return_Exchange_DATE             DATE            NULL, 
+    cnt                              NUMBER          NULL, 
+    CONSTRAINT MYPAGE_RETURN_EXCHANGE_PK PRIMARY KEY (ORDER_NO)
+)
+/
+
+CREATE SEQUENCE MYPAGE_Return_Exchange_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER MYPAGE_Return_Exchange_AI_TRG
+BEFORE INSERT ON MYPAGE_Return_Exchange 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT MYPAGE_Return_Exchange_SEQ.NEXTVAL
+    INTO :NEW.ORDER_NO
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER MYPAGE_Return_Exchange_AI_TRG;
+/
+
+--DROP SEQUENCE MYPAGE_Return_Exchange_SEQ;
+/
+
+COMMENT ON TABLE MYPAGE_Return_Exchange IS '마이페이지 반품 교환???????'
+/
+
+COMMENT ON COLUMN MYPAGE_Return_Exchange.ORDER_NO IS '주문번호'
+/
+
+COMMENT ON COLUMN MYPAGE_Return_Exchange.book_name IS '책제목'
+/
+
+COMMENT ON COLUMN MYPAGE_Return_Exchange.ORDER_RECV_NAME IS '받는사람이름'
+/
+
+COMMENT ON COLUMN MYPAGE_Return_Exchange.ORDER_DATE IS '주문일'
+/
+
+COMMENT ON COLUMN MYPAGE_Return_Exchange.CATEGORY_CODE IS '회송방법'
+/
+
+COMMENT ON COLUMN MYPAGE_Return_Exchange.Return_Exchange_delivery_type IS '환불교환'
+/
+
+COMMENT ON COLUMN MYPAGE_Return_Exchange.Return_Exchange_status IS '처리상태'
+/
+
+COMMENT ON COLUMN MYPAGE_Return_Exchange.Return_Exchange_DATE IS '접수일'
+/
+
+COMMENT ON COLUMN MYPAGE_Return_Exchange.cnt IS '수량'
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE EVENT_COMMENT
+(
+    event_co_idx           NUMBER           NOT NULL, 
+    event_co_writer        VARCHAR2(30)     NOT NULL, 
+    event_co_content       VARCHAR2(500)    NOT NULL, 
+    event_co_write_date    DATE             NOT NULL, 
+    event_idx              NUMBER           NOT NULL, 
+    CONSTRAINT EVENT_COMMENT_PK PRIMARY KEY (event_co_idx)
+)
+/
+
+CREATE SEQUENCE EVENT_COMMENT_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER EVENT_COMMENT_AI_TRG
+BEFORE INSERT ON EVENT_COMMENT 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT EVENT_COMMENT_SEQ.NEXTVAL
+    INTO :NEW.event_co_idx
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER EVENT_COMMENT_AI_TRG;
+/
+
+--DROP SEQUENCE EVENT_COMMENT_SEQ;
+/
+
+COMMENT ON TABLE EVENT_COMMENT IS '이벤트댓글'
+/
+
+COMMENT ON COLUMN EVENT_COMMENT.event_co_idx IS '이벤트댓글인덱스'
+/
+
+COMMENT ON COLUMN EVENT_COMMENT.event_co_writer IS '이벤트댓글작성자'
+/
+
+COMMENT ON COLUMN EVENT_COMMENT.event_co_content IS '이벤트댓글내용'
+/
+
+COMMENT ON COLUMN EVENT_COMMENT.event_co_write_date IS '이벤트댓글작성일'
+/
+
+COMMENT ON COLUMN EVENT_COMMENT.event_idx IS '이벤트인덱스'
+/
+
+ALTER TABLE EVENT_COMMENT
+    ADD CONSTRAINT FK_EVENT_COMMENT_event_idx_EVE FOREIGN KEY (event_idx)
+        REFERENCES EVENT (event_idx)
+/
+
+ALTER TABLE EVENT_COMMENT
+    ADD CONSTRAINT FK_EVENT_COMMENT_event_co_writ FOREIGN KEY (event_co_writer)
+        REFERENCES USERS (id)
+/
+
+
+-- BOOK_CATEGORY Table Create SQL
+CREATE TABLE ORDER_GOODS
+(
+    ORDER_G_NO     NUMBER    NOT NULL, 
+    GOODS_CODE     NUMBER    NOT NULL, 
+    ORDER_NO       NUMBER    NOT NULL, 
+    ORDER_G_CNT    NUMBER    NOT NULL, 
+    CONSTRAINT ORDER_GOODS_PK PRIMARY KEY (ORDER_G_NO)
+)
+/
+
+CREATE SEQUENCE ORDER_GOODS_SEQ
+START WITH 1
+INCREMENT BY 1;
+/
+
+CREATE OR REPLACE TRIGGER ORDER_GOODS_AI_TRG
+BEFORE INSERT ON ORDER_GOODS 
+REFERENCING NEW AS NEW FOR EACH ROW 
+BEGIN 
+    SELECT ORDER_GOODS_SEQ.NEXTVAL
+    INTO :NEW.ORDER_G_NO
+    FROM DUAL;
+END;
+/
+
+--DROP TRIGGER ORDER_GOODS_AI_TRG;
+/
+
+--DROP SEQUENCE ORDER_GOODS_SEQ;
+/
+
+COMMENT ON TABLE ORDER_GOODS IS '주문하위 굿즈테이블'
+/
+
+COMMENT ON COLUMN ORDER_GOODS.ORDER_G_NO IS '주문하위번호'
+/
+
+COMMENT ON COLUMN ORDER_GOODS.GOODS_CODE IS '굿즈 상품번호'
+/
+
+COMMENT ON COLUMN ORDER_GOODS.ORDER_NO IS '주문번호'
+/
+
+COMMENT ON COLUMN ORDER_GOODS.ORDER_G_CNT IS '개수'
+/
+
+ALTER TABLE ORDER_GOODS
+    ADD CONSTRAINT FK_ORDER_GOODS_GOODS_CODE_good FOREIGN KEY (GOODS_CODE)
+        REFERENCES goods (goods_code)
+/
+
+ALTER TABLE ORDER_GOODS
+    ADD CONSTRAINT FK_ORDER_GOODS_ORDER_NO_ORDERS FOREIGN KEY (ORDER_NO)
+        REFERENCES ORDERS (ORDER_NO)
+/
+
+

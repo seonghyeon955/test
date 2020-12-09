@@ -1,0 +1,114 @@
+<!-- 메뉴 선택 -->
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<style>
+	.category_code{
+		font-weight: bold;
+	}
+	.category_main{
+		font-size: 0.9em;
+	}
+	.category_name{
+		font-size: 0.3rem;
+	}
+	.code_next{
+		display: none;
+	}
+	.main_text{
+		display: none;
+	}
+</style>
+    
+<script>
+	$(function(){
+		
+		$(".category_code").mouseover(function(){
+	         $(this).next().fadeIn(300);
+	         $("#categoryList").val("열림");
+	       });
+	      
+	       $(".category_main").mouseover(function(){
+	         $(this).next().fadeIn(300);
+	       });
+	      
+	       
+	       $("#categoryListimg").click(function(){
+	          if($("#categoryList").val() == "열림"){
+	             $(".code_next").each(function(){
+	                $(this).css("display", "none");
+	             });
+	             $(".main_text").each(function(){
+	                $(this).css("display", "none");
+	             });
+	          }
+	       });
+		 
+	});
+	
+	function ahref(href){
+		var url = encodeURIComponent(href, "UTF-8");
+		location.href = url;
+	}
+	
+
+</script>
+	<nav class="navbar navbar-expand-md" id="secondBanner">
+		<div class="collapse navbar-collapse" id="collapsibleNavbar">
+		    <ul class="navbar-nav">
+		     <li class="nav-item"></li>
+		     <li class="nav-item dropdown">
+			      <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+			        <img id="categoryListimg" src="${pageContext.request.contextPath}/resources/img/pic/세줄.png" height="80px">
+			      </a>
+			      <div class="dropdown-menu">
+			      	<input type="hidden" id="categoryList" value="닫힘">
+			     	<c:forEach var="category" items="${categoryCode }">
+		    			<a class="dropdown-item category_code" href="bookListView.do?category_code=${category }">${category }</a>
+		    			<span class="code_next">
+		    			<c:forEach var="main" items="${codemainmap }">
+		    				<c:if test="${main.key == category }">
+		    					<c:forEach var="category_main" items="${main.value }">
+		    						<a class="dropdown-item category_main" href="bookListView.do?category_code=${category }&category_main=${category_main }">${category_main }</a>
+		    						<span class="main_text">
+		    						<c:forEach var="name" items="${mainnamemap }">
+		    							<c:if test="${name.key == category_main }">
+		    								<c:forEach var="category_name" items="${name.value }">
+		    									<a class="dropdown-item category_name" href="bookListView.do?category_code=${category }&category_main=${category_main }&category_name=${category_name}">${category_name }</a>
+		    								</c:forEach>
+		    							</c:if>
+		    						</c:forEach>
+		    						</span>
+		    					</c:forEach>
+		    				</c:if>
+		    			</c:forEach>
+		    			</span>
+		    		</c:forEach>
+			        
+			      </div>
+			</li>
+		    </ul>
+			<ul class="navbar-nav">
+
+				<li class="nav-item">
+					<a class="nav-link text-white h5" href="bookListView.do?category_code=국내도서">국내도서</a>
+				
+					
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-white h5" href="bookListView.do?category_code=외국도서">외국도서</a>
+					<ul class="main_menu">
+						
+					</ul>
+				</li>
+			</ul>
+			<ul class="navbar-nav ml-auto">
+					<li class="a nav-item"><a class="nav-link text-white h5" href="${pageContext.request.contextPath}/bestSeller.do">베스트</a></li>
+					<li class="a nav-item"><a class="nav-link text-white h5" href="${pageContext.request.contextPath}/steadySeller.do">스테디</a></li>
+					<li class="a nav-item"><a class="nav-link text-white h5" href="${pageContext.request.contextPath}/newBook.do">신간</a></li>
+					<li class="a nav-item"><a class="nav-link text-white h5" href="${pageContext.request.contextPath}/QnAList.do">Q&amp;A</a></li>
+			</ul>
+		</div>
+	</nav>
+	<br>
+		

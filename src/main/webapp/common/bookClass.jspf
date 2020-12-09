@@ -1,0 +1,83 @@
+<!-- 책 분류 메뉴 표시 -->
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<script>
+	function selectCode(){
+		var code = $('#category_code').val();
+		//alert(category_code);
+		$.ajax({
+			type: 'POST',
+			url: 'getCategoryMain.do',
+			dataType: "json",
+			data: {category_code: code},
+			success: function(result){
+				//alert(result);
+				$('#category_main').html("<option value=''>-중분류-</option>");
+				$('#category_name').html("<option value=''>-소분류-</option>");
+				$(result).each(function(i) {
+			        var main = result[i];
+			        console.log("main : " + main)
+		        	$('#category_main').append("<option value='" + main + "'>" + main + "</option>");  
+		        });
+			}
+		});
+	}
+
+
+	function selectMain(){
+		var code = $('#category_code').val();
+		var main = $('#category_main').val();
+		//alert(category_code + '   ' + category_main);
+		$.ajax({
+			type: 'POST',
+			url: 'getCategoryName.do',
+			dataType: "json",
+			data: {category_code: code, 
+				   category_main: main},
+			success: function(result){
+				//alert(result);
+				$('#category_name').html("<option value=''>-소분류-</option>");
+				$(result).each(function(i) {
+			        var name = result[i];
+			        console.log("name : " + name)
+		        	$('#category_name').append("<option value='" + name + "'>" + name + "</option>");  
+		        });
+			}
+		});
+	}
+	
+	
+	function selectName(){
+		var code = $('#category_code').val();
+		var main = $('#category_main').val();
+		var name = $('#category_name').val();
+		//alert(category_code + '   ' + category_main);
+		location.href = "bookListView.do?category_code="+code + "&category_main=" + main + "&category_name=" + name;
+
+	}
+
+	
+	
+
+
+</script>
+
+
+
+<span style="padding-left:50px">홈&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="${pageContext.request.contextPath}/resources/img/pic/sideArrow.png" alt="화살표" width="10px">
+		<select name="category_code" id="category_code" onchange="selectCode(this)">
+			<option value="">-대분류-</option>
+           		<c:forEach var="category" items="${categoryCode }">
+	     			<option value="${category }">${category }</option>
+	     		</c:forEach>
+		</select>
+</span>
+		<select name="category_main" id="category_main" onchange="selectMain(this)">
+      		<option value="">-중분류-</option>
+      	</select>
+      	<select name="category_name" id="category_name" onchange="selectName(this)">
+      		<option value="">-소분류-</option>
+      	</select>
+<hr>

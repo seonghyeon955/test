@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+  <typeAliases>
+     <!-- <typeAlias alias="board" type="com.spring.biz.board.BoardVO"/> -->
+     <typeAlias type="com.bit.bookstore.vo.GoodsVO" alias="goodsvo"/>
+     <typeAlias type="com.bit.bookstore.vo.BookVO" alias="bookvo"/>
+     <typeAlias type="com.bit.bookstore.vo.CartBookVO" alias="cartbookvo"/>
+     <typeAlias type="com.bit.bookstore.vo.OrdersVO" alias="ordersvo"/>
+     <typeAlias type="com.bit.bookstore.vo.CartVO" alias="cartvo"/>
+     <typeAlias type="com.bit.bookstore.vo.StoreVO" alias="storevo"/>
+     
+     <typeAlias alias="officeVO" type="com.spring.biz.office.OfficeVO" />
+     <typeAlias alias="bookListViewVO" type="com.spring.biz.seongmi.bookList.BookListViewVO" />
+     
+     <typeAlias alias="book" type="com.spring.biz.book.BookVO"/>
+     <typeAlias alias="cart" type="com.spring.biz.cart.CartVO"/>
+     <typeAlias alias="store" type="com.spring.biz.store.StoreVO"/>
+     <typeAlias alias="stock" type="com.spring.biz.bookstock.BookStockVO"/>
+     <typeAlias alias="jego" type="com.spring.biz.jego.JegoVO"/>
+     <typeAlias alias="event" type="com.spring.biz.event.EventVO"/>
+     
+     <typeAlias alias="user" type="com.bit.bookstore.vo.UserVO"/>
+     
+     
+     <typeAlias alias="contentorder" type="com.spring.biz.book.ContentOrderVO"/>
+     <typeAlias alias="review" type="com.spring.biz.book.ReviewVO"/>
+     <typeAlias alias="comment" type="com.spring.biz.book.CommVO"/>
+     <typeAlias alias="article" type="com.spring.biz.book.ArticleVO"/>
+     
+     <typeAlias type="com.bookstore.order.vo.MyOrderVO" alias="myordervo"/>
+     <typeAlias type="com.bookstore.order.vo.MyOrderBookVO" alias="myorderbookvo"/>
+     <typeAlias type="com.bookstore.order.vo.MyOrderGoodsVO" alias="myordergoodsvo"/>
+     <typeAlias type="com.bookstore.order.vo.MyReturnVO" alias="myreturnvo"/>
+     <typeAlias type="com.bookstore.order.vo.MyMileageVO" alias="mymileagevo"/>
+     
+<!--      <typeAlias type="com.bookstore.order.vo.MemberVO" alias="membervo"/>
+     <typeAlias type="com.bookstore.order.vo.MyOrderVO" alias="myordervo"/>
+     <typeAlias type="com.bookstore.order.vo.OrderBookVO" alias="orderbookvo"/>
+     <typeAlias type="com.bookstore.order.vo.OrderGoodsVO" alias="ordergoodsvo"/>
+     <typeAlias type="com.bookstore.userrate.UrateVO" alias="uratevo"/> -->
+     
+  </typeAliases>
+  
+  <mappers>
+    <!-- <mapper resource="mappings/board-mapper.xml"/> -->
+    <mapper resource="mappings/order-mapper.xml"/>
+    <mapper resource="mappings/onlineStore-mapper.xml"/>
+    <mapper resource="mappings/user-mapper.xml"/>
+    <mapper resource="mappings/office-mapper.xml"/>
+    <mapper resource="mappings/book-mapper.xml"/>
+    <mapper resource="mappings/cart-mapper.xml"/>
+   <mapper resource="mappings/store-mapper.xml"/>
+   <mapper resource="mappings/stock-mapper.xml"/>
+   <mapper resource="mappings/jego-mapper.xml"/>
+   <mapper resource="mappings/event-mapper.xml"/>
+   <mapper resource="mappings/main-mapper.xml"/>
+   <mapper resource="mappings/bookListView_mapper.xml"/>
+   <mapper resource="mappings/storeInfo-mapper.xml"/>
+   <mapper resource="mappings/myorder-mapper.xml"/>
+  </mappers>
+</configuration>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cartmapper">
+
+<insert id="insertCart" parameterType="Map">
+	INSERT INTO CART (USER_ID, BOOK_NO, CNT, STORE_CODE)
+	VALUES (#{id}, #{book_no}, #{cnt}, #{store_code})
+</insert>
+
+<update id="updateCart" parameterType="cart">
+	UPDATE CART SET USER_ID=#{user_id},  BOOK_NO=#{book_no}, CNT=#{cnt}, 
+	STORE_CODE=#{store_code} 
+	WHERE CART_IDX=#{cart_idx}
+</update>
+
+<select id="selectCart" parameterType="cart" resultType="cart">
+	SELECT * FROM CART WHERE CART_IDX=#{cart_idx}
+</select>
+
+<delete id="deleteCart" parameterType="integer">
+	DELETE CART
+	WHERE CART_IDX = #{cart_idx }
+</delete>
+<select id="selectCartList" resultType="cart">
+	SELECT * FROM CART WHERE 1=1 
+</select>
+
+<select id="checkSame" resultType="integer" parameterType="Map">
+	SELECT COUNT(*) FROM CART 
+	WHERE BOOK_NO = #{book_no}
+	AND USER_ID= #{id}
+	AND STORE_CODE= #{store_code}
+</select>
+<select id="getCartIdx" resultType="integer" parameterType="Map">
+	SELECT CART_IDX FROM CART
+	WHERE BOOK_NO = #{book_no}
+	AND USER_ID= #{id}
+	AND STORE_CODE= #{store_code}
+</select>
+
+<select id="getCartList2" parameterType="String" resultType="cart">
+	SELECT * FROM CART
+	WHERE USER_ID = #{id}
+	AND STORE_CODE = 'online'
+</select>
+
+<select id="getAll" resultType="cart" parameterType="Map">
+	SELECT * FROM CART C, BOOK B
+	WHERE C.BOOK_NO = B.BOOK_NO
+	AND C.USER_ID= #{id}
+	<if test="store_code != null">
+	AND STORE_CODE = #{store_code}
+	</if>
+	<if test="store_code == null">
+	<![CDATA[AND STORE_CODE <> 'online']]>
+	</if>
+</select>
+
+
+<delete id="noSameBaro" parameterType="Map">
+	<![CDATA[DELETE FROM CART 
+	WHERE STORE_CODE <> 'online'
+	OR STORE_CODE <> #{store_code}
+	AND USER_ID = #{id}]]>
+</delete>
+
+<update id="updateCartCnt" parameterType="Map">
+	UPDATE CART
+	SET CNT = #{cnt}
+	WHERE CART_IDX = #{cart_idx}
+</update>
+
+<select id="getCartCnt" parameterType="Integer">
+	SELECT CNT FROM CART
+	WHERE CART_IDX = #{cart_idx }
+</select>
+
+<select id="getQuickPickCart" parameterType="String">
+	SELECT DISTINCT STORE_CODE  FROM CART, 
+	WHERE STORE_CODE != 'online'
+	AND USER_ID= #{id}
+</select>
+
+<delete id="deleteQuickPicCart" parameterType="Map">
+	DELETE CART
+	WHERE STORE_CODE = #{store_code }
+	AND USER_ID=#{id}
+</delete>
+
+
+</mapper>
+

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="eventmapper">
+
+<!-- <insert id="insertEvent" parameterType="event">
+	INSERT INTO EVENT 
+	(EVENT_TYPE, EVENT_TITLE, 
+	EVENT_START, EVENT_END, EVENT_CONTENT, VIEWS, IMG_PATH, 
+	EVENT_FILE_NAME, EVENT_EXIST, EVENT_WRITE_DATE, 
+	EVENT_BOOK_RATE, CATEGORY_NO, BOOK_NO)
+	VALUES 
+	(#{event_type},#{event_title}, #{event_start},#{event_end},#{event_content},
+	 #{views},#{img_path}, #{event_file_name},#{event_exist},
+	#{event_write_date}, #{event_book_rate}, #{category_no},
+	#{book_no}
+</insert> -->
+
+<!-- <update id="updateEvent" parameterType="event">
+	UPDATE EVENT 
+	SET EVENT_TYPE = #{event_type}, EVENT_TITLE = #{event_title}, EVENT_START=#{event_start},EVENT_END =#{event_end},
+	 EVENT_CONTENT=#{event_content}, VIEWS = #{views}, IMG_PATH=#{img_path}, EVENT_FILE_NAME=#{event_file_name},EVENT_EXIST=#{event_exist},
+	EVENT_WRITE_DATE=#{event_write_date}, EVENT_BOOK_RATE=#{event_book_rate}, CATEGORY_NO=#{category_no},
+	BOOK_NO=#{book_no}
+	WHERE EVENT_IDX= #{event_idx}
+</update> -->
+
+<!-- <delete id="deleteEvent" parameterType="event">
+	DELETE FROM EVENT WHERE EVENT_IDX= #{event_idx}
+</delete>
+
+<select id="selectEvent" parameterType="event" resultType="event">
+	SELECT * FROM EVENT
+	WHERE EVENT_IDX= #{event_idx}
+
+</select> -->
+
+<select id="selectEvents" parameterType="integer" resultType="event">
+	SELECT * FROM EVENT
+	WHERE BOOK_NO = #{book_no}
+
+</select>
+
+<select id="selectEventCnt" parameterType="integer" resultType="integer">
+	SELECT COUNT(*) FROM EVENT
+	WHERE BOOK_NO = #{book_no}
+
+</select>
+</mapper>

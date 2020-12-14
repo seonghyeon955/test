@@ -6,18 +6,18 @@
 저는 이 프로젝트에서 상품의 상세페이지와 장바구니 부분을 맡았습니다.
 
 
-![img](img/1.png) 
+![img](image/1.png) 
 
-![img](img/2.png)
+![img](image/2.png)
 
-![img](img/3.png)
+![img](image/3.png)
 
-![img](img/4.png)
+![img](image/4.png)
 
-![img](img/5.png)
+![img](image/5.png)
 
-![img](img/6.png)
+![img](image/6.png)
 
-![img](img/7.png)
+![img](image/7.png)
 
-![img](img/8.png)
+![img](image/8.png)
